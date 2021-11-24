@@ -113,7 +113,7 @@ class VUMeter():
           column.append(self.parent._parent._button_rows[row_index][column_index])
         if master != True:
           strip = self.parent._parent._mixer.channel_strip(column_index)
-          column.append(self.parent._parent._track_stop_buttons[column_index])
+          column.append(self.parent._parent._stop_buttons[column_index])
           column.extend([strip._select_button, strip._mute_button, strip._solo_button, strip._arm_button])
     return matrix
 
@@ -227,8 +227,8 @@ class VUMeters(ControlSurfaceComponent):
           else:
             # button.send_value(LED_OFF, True)
             button.send_value(LED_OFF)
-            # self._parent._track_stop_buttons[button_index].send_value(LED_OFF, True) #also zero the clip stop buttons when used as a reset
-            self._parent._track_stop_buttons[button_index].send_value(LED_OFF) #also zero the clip stop buttons when used as a reset
+            # self._parent._stop_buttons[button_index].send_value(LED_OFF, True) #also zero the clip stop buttons when used as a reset
+            # self._parent._stop_buttons[button_index].send_value(LED_OFF) #also zero the clip stop buttons when used as a reset# COMMENTED OUT CJ 2021-11-24
 
     def set_master_leds(self, level):
         # self._parent._scene_launch_buttons
