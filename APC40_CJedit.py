@@ -48,6 +48,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()
         self._crossfade_button_skin = make_crossfade_button_skin()
+        self._implicit_arm = False
+        self._step_sequencer = None
+        self._vu = None
         with self.component_guard():
             self._create_controls()
             self._create_bank_toggle()
@@ -270,26 +273,44 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_matrix_modes(self):
-        self._matrix_modes = MatrixModesComponent(self._session_matrix, self._session, self._session_zoom, tuple(self._stop_buttons), self)
-        self._matrix_modes.name = u'Matrix_Modes'
+        # self._matrix_modes = MatrixModesComponent(self._session_matrix, self._session, self._session_zoom, tuple(self._stop_buttons), self)
+        # self._matrix_modes.name = u'Matrix_Modes'
 
 
 
-        self._shift_modes = ShiftableSelectorComponent(self, tuple(self.select_buttons), self._master_select_button, tuple(self.stop_buttons), self._stop_all_button, tuple(self.mute_buttons), tuple(self.solo_buttons), tuple(self.arm_buttons), tuple(self.scene_launch_buttons), self._session_matrix, self._session, self._session_zoom, self._mixer, None, self._matrix_modes , self._sequencer)
+        # self._shift_modes = ShiftableSelectorComponent(self, tuple(self.select_buttons), self._master_select_button, tuple(self.stop_buttons), self._stop_all_button, tuple(self.mute_buttons), tuple(self.solo_buttons), tuple(self.arm_buttons), tuple(self.scene_launch_buttons), self._session_matrix, self._session, self._session_zoom, self._mixer, None, self._matrix_modes , self._sequencer)
 
-        # if self._implicit_arm:
-        #     self._auto_arm = AutoArmComponent(name='Auto_Arm')
+        if self._implicit_arm:
+            self._auto_arm = AutoArmComponent(name='Auto_Arm')
 
-        # self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
-        # self._matrix_modes.default_behaviour = ImmediateBehaviour()
+        self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
+        self._matrix_modes.default_behaviour = ImmediateBehaviour()
         # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        # self._matrix_modes.add_mode('sends', self._session_mode_layers())
-        # self._matrix_modes.add_mode('user', self._user_mode_layers())
-        # self._matrix_modes.add_mode('session', self._session_mode_layers())
-        # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+        self._matrix_modes.add_mode('sends', self._session_mode_layers())
+        self._matrix_modes.add_mode('session', self._session_mode_layers())
+        self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+
+        # self._encoder_mode = ModesComponent(name=u'Encoder_Mode', is_enabled=False)
+        # self._encoder_mode.default_behaviour = ImmediateBehaviour()
+        # self._encoder_mode.add_mode(u'pan', [AddLayerMode(self._mixer, Layer(pan_controls=self._mixer_encoders))])
+        # self._encoder_mode.add_mode(u'sends', [AddLayerMode(self._mixer, Layer(send_controls=self._mixer_encoders)), DelayMode(AddLayerMode(self._mixer, Layer(send_select_buttons=self._send_select_buttons)))])
+        # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
+        # self._encoder_mode.layer = Layer(pan_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button)
+        # self._encoder_mode.selected_mode = u'pan'
 
 
-        # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+
+
+    def _session_mode_layers(self):
+        return [self._session, self._view_control, self._session_zoom]#, self._mixer
+
+    def _user_mode_layers(self):
+        return [self._step_sequencer, self._view_control, self._session_zoom]#, self._mixer
+
+    def _vu_mode_layers(self):
+        return [self._vu, self._view_control, self._session_zoom]
 
     def _on_track_offset_changed(self):
         self._matrix_modes._on_track_offset_changed()
