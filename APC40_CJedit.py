@@ -31,6 +31,7 @@ from _Framework.Control import ButtonControl
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
+from ._resources.MatrixModesComponent import MatrixModesComponent
 
 
 class APC40_CJedit(APC, OptimizedControlSurface):
@@ -46,6 +47,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._create_bank_toggle()
 
             self._create_actions()
+            # self._create_vu()
+            # self._create_step_sequencer()
+            # self._create_instrument()
 
             self._create_session()
             self._create_mixer()
@@ -56,7 +60,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._create_recording()
             self._session.set_mixer(self._mixer)
 
-
+            self._create_matrix_modes()
 
 
         self.set_highlighting_session_component(self._session)
@@ -140,6 +144,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._shifted_matrix = ButtonMatrixElement(rows=recursive_map(self._with_shift, self._matrix_rows_raw))
         self._shifted_scene_buttons = ButtonMatrixElement(rows=[[ self._with_shift(button) for button in self._scene_launch_buttons_raw ]])
 
+
     def _create_bank_toggle(self):
         self._bank_toggle = BankToggleComponent(is_enabled=False, layer=Layer(bank_toggle_button=self._bank_button))
 
@@ -210,6 +215,16 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _create_recording(self):
         record_button = MultiElement(self._session_record_button, self._foot_pedal_button.single_press)
         self._session_recording = SessionRecordingComponent(ClipCreator(), self._view_control, name=u'Session_Recording', is_enabled=False, layer=Layer(new_button=self._foot_pedal_button.double_press, record_button=record_button, _uses_foot_pedal=self._foot_pedal_button))
+
+
+    def _create_matrix_modes(self):
+        self._matrix_modes = MatrixModesComponent(self._session_matrix, self._session, self._session_zoom, tuple(self._stop_buttons), self)
+        self._matrix_modes.name = 'Matrix_Modes'
+
+
+    def _on_track_offset_changed(self):
+        self._matrix_modes._on_track_offset_changed()
+
 
     def get_matrix_button(self, column, row):
         return self._matrix_rows_raw[row][column]
