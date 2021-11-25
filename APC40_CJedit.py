@@ -24,13 +24,23 @@ from ._default.BankToggleComponent import BankToggleComponent
 from ._default.MixerComponent import MixerComponent
 from ._default.QuantizationComponent import QuantizationComponent
 from ._default.TransportComponent import TransportComponent
+
 NUM_TRACKS = 8
 NUM_SCENES = 5
 
 from _Framework.Control import ButtonControl
+from _Framework.ButtonElement import ButtonElement
+from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
+from _Framework.SubjectSlot import subject_slot
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
+from ._resources.MatrixModesComponent import MatrixModesComponent
+from ._resources.ShiftableSelectorComponent import ShiftableSelectorComponent
+from ._resources.StepSequencerComponent import StepSequencerComponent
+from ._resources.ConfigurableButtonElement import ConfigurableButtonElement 
+
+from ._resources.VUMeters import VUMeters
 
 
 class APC40_CJedit(APC, OptimizedControlSurface):
@@ -41,11 +51,17 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()
         self._crossfade_button_skin = make_crossfade_button_skin()
+        self._implicit_arm = False
+        self._sequencer = None
+        self._vu = None
         with self.component_guard():
             self._create_controls()
             self._create_bank_toggle()
 
             self._create_actions()
+            self._create_vu()
+            # self._create_step_sequencer()
+            # self._create_instrument()
 
             self._create_session()
             self._create_mixer()
@@ -57,12 +73,15 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
 
+            self._create_sequencer()
+            self._create_matrix_modes()
 
 
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
 
     def _with_shift(self, button):
+        # self._shift_value = 1
         return ComboElement(button, modifiers=[self._shift_button])
 
     def _create_controls(self):
@@ -81,7 +100,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             return make_button(track, 52, name=u'%d_Stop_Button' % track, skin=self._stop_button_skin)
 
         self._shift_button = make_button(0, 98, name=u'Shift_Button', resource_type=PrioritizedResource)
-        self._bank_button = make_on_off_button(0, 103, name=u'Bank_Button')
+        self._bank_button = make_on_off_button(0, 103, name=u'Bank_Button', resource_type=PrioritizedResource)
         self._left_button = make_button(0, 97, name=u'Bank_Select_Left_Button')
         self._right_button = make_button(0, 96, name=u'Bank_Select_Right_Button')
         self._up_button = make_button(0, 94, name=u'Bank_Select_Up_Button')
@@ -92,9 +111,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._scene_launch_buttons = ButtonMatrixElement(rows=[self._scene_launch_buttons_raw])
         self._matrix_rows_raw = [ [ make_matrix_button(track, scene) for track in range(NUM_TRACKS) ] for scene in range(NUM_SCENES) ]
         self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)
-        self._pan_button = make_on_off_button(0, 87, name=u'Pan_Button')
+        self._pan_button = make_on_off_button(0, 87, name=u'Pan_Button', resource_type=PrioritizedResource)
         self._sends_button = make_on_off_button(0, 88, name=u'Sends_Button', resource_type=PrioritizedResource)
-        self._user_button = make_on_off_button(0, 89, name=u'User_Button')
+        self._user_button = make_on_off_button(0, 89, name=u'User_Button', resource_type=PrioritizedResource)
         self._mixer_encoders = ButtonMatrixElement(rows=[[ make_ring_encoder(48 + track, 56 + track, name=u'Track_Control_%d' % track) for track in range(NUM_TRACKS) ]])
         self._volume_controls = ButtonMatrixElement(rows=[[ make_slider(track, 7, name=u'%d_Volume_Control' % track) for track in range(NUM_TRACKS) ]])
         self._master_volume_control = make_slider(0, 14, name=u'Master_Volume_Control')
@@ -139,6 +158,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._foot_pedal_button = DoublePressElement(make_pedal_button(64, name=u'Foot_Pedal'))
         self._shifted_matrix = ButtonMatrixElement(rows=recursive_map(self._with_shift, self._matrix_rows_raw))
         self._shifted_scene_buttons = ButtonMatrixElement(rows=[[ self._with_shift(button) for button in self._scene_launch_buttons_raw ]])
+
 
     def _create_bank_toggle(self):
         self._bank_toggle = BankToggleComponent(is_enabled=False, layer=Layer(bank_toggle_button=self._bank_button))
@@ -210,6 +230,152 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _create_recording(self):
         record_button = MultiElement(self._session_record_button, self._foot_pedal_button.single_press)
         self._session_recording = SessionRecordingComponent(ClipCreator(), self._view_control, name=u'Session_Recording', is_enabled=False, layer=Layer(new_button=self._foot_pedal_button.double_press, record_button=record_button, _uses_foot_pedal=self._foot_pedal_button))
+
+
+    def _create_sequencer(self):
+        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
+        is_momentary = True
+        select_buttons = []
+        arm_buttons = []
+        solo_buttons = []
+        mute_buttons = []
+        scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
+
+        stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
+
+
+        for track in range(8):
+            solo_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 49)
+            solo_buttons.append(solo_button)
+            mute_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 50)
+            mute_buttons.append(mute_button)
+            solo_button.name = str(track) + '_Solo_Button'
+            mute_button.name = str(track) + '_Mute_Button'
+            select_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 51))
+            select_buttons[-1].name = str(track) + '_Select_Button'          
+            arm_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 48))
+            arm_buttons[-1].name = str(track) + '_Arm_Button'
+
+        self._sequencer.set_bank_buttons(tuple(select_buttons))
+        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        self._sequencer.set_button_matrix(self._session_matrix)
+        self._sequencer.set_follow_button(self._master_select_button)
+        self._sequencer.set_velocity_buttons(tuple(arm_buttons))
+        self._sequencer.set_shift_button(self._shift_button)
+        self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
+        self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
+        self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
+
+        self.select_buttons = select_buttons
+        self.arm_buttons = arm_buttons
+        self.mute_buttons = mute_buttons
+        self.solo_buttons = solo_buttons
+
+        self.stop_buttons = stop_buttons
+
+        self.scene_launch_buttons = scene_launch_buttons
+
+    def _create_vu(self):
+        # self._parent = self 
+        # self._parent._button_rows = self._matrix_rows_raw
+        # self._parent._track_stop_buttons = self._stop_buttons 
+        # self._parent._scene_launch_buttons = self._scene_launch_buttons
+        # self._parent._matrix = self._session_matrix
+        self._button_rows = self._matrix_rows_raw
+        self._vu = VUMeters(self)
+        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        self._vu.disconnect()
+        self._vu.disable()
+
+        self._shift_button.add_value_listener(self._shift_value)
+        # self._vu._shift_button.add_value_listener(self._vu._shift_value)
+
+    def _shift_value(self,  value):
+            if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
+                if value != 0:
+                    self._vu.disconnect()
+                    self._vu.disable()
+                else:
+                    self._update_vu_meters()
+                    self._vu.enable()
+
+
+    
+    def _update_vu_meters(self):
+        if self._vu == None and self._matrix_modes.selected_mode == 'VU':
+            self._vu = VUMeters(self._parent)
+        else:
+            self._vu.disconnect()
+        self._vu.observe( int(self._session_zoom._session.track_offset()) )
+
+    def _create_matrix_modes(self):
+        # self._matrix_modes = MatrixModesComponent(self._session_matrix, self._session, self._session_zoom, tuple(self._stop_buttons), self)
+        # self._matrix_modes.name = u'Matrix_Modes'
+
+
+
+        # self._shift_modes = ShiftableSelectorComponent(self, tuple(self.select_buttons), self._master_select_button, tuple(self.stop_buttons), self._stop_all_button, tuple(self.mute_buttons), tuple(self.solo_buttons), tuple(self.arm_buttons), tuple(self.scene_launch_buttons), self._session_matrix, self._session, self._session_zoom, self._mixer, None, self._matrix_modes , self._sequencer)
+
+        if self._implicit_arm:
+            self._auto_arm = AutoArmComponent(name='Auto_Arm')
+
+        self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
+        self._matrix_modes.default_behaviour = ImmediateBehaviour()
+        # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
+        self._matrix_modes.add_mode('sends', self._session_mode_layers())
+        self._matrix_modes.add_mode('session', self._session_mode_layers())
+        self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+
+        # self._encoder_mode = ModesComponent(name=u'Encoder_Mode', is_enabled=False)
+        # self._encoder_mode.default_behaviour = ImmediateBehaviour()
+        # self._encoder_mode.add_mode(u'pan', [AddLayerMode(self._mixer, Layer(pan_controls=self._mixer_encoders))])
+        # self._encoder_mode.add_mode(u'sends', [AddLayerMode(self._mixer, Layer(send_controls=self._mixer_encoders)), DelayMode(AddLayerMode(self._mixer, Layer(send_select_buttons=self._send_select_buttons)))])
+        # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
+        # self._encoder_mode.layer = Layer(pan_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button)
+        # self._encoder_mode.selected_mode = u'pan'
+
+
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        self._on_matrix_mode_changed.subject = self._matrix_modes
+        self._matrix_modes.selected_mode = u'session'
+
+
+    def _session_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable()
+        return [self._session, self._view_control, self._session_zoom]#, self._mixer
+
+    def _user_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable() 
+        return [self._sequencer, self._view_control, self._session_zoom]#, self._mixer
+
+    def _vu_mode_layers(self):
+        
+        self._session.set_enabled(False)
+        # self._session_zoom._on_zoom_value(1) #zoom out
+        self._session_zoom.set_enabled(True)
+        self._session_zoom._is_zoomed_out = False
+        # self._session_zoom.set_zoom_button(self._parent._shift_button)
+        self._session_zoom.update()
+
+        self._update_vu_meters()
+        return [self._vu, self._view_control, self._session_zoom]
+
+
+    def _on_track_offset_changed(self):
+        self._matrix_modes._on_track_offset_changed()
+        if self._matrix_modes == 'VU':
+            self._update_vu_meters()
+
+
+    @subject_slot('selected_mode')
+    def _on_matrix_mode_changed(self, mode):
+        self._vu.disconnect()
+        self._vu.disable() 
+
+
 
     def get_matrix_button(self, column, row):
         return self._matrix_rows_raw[row][column]
