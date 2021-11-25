@@ -51,7 +51,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._stop_button_skin = make_stop_button_skin()
         self._crossfade_button_skin = make_crossfade_button_skin()
         self._implicit_arm = False
-        self._step_sequencer = None
+        self._sequencer = None
         self._vu = None
         with self.component_guard():
             self._create_controls()
@@ -72,7 +72,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
 
-            # self._create_sequencer()
+            self._create_sequencer()
             self._create_matrix_modes()
 
 
@@ -80,6 +80,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.set_device_component(self._device)
 
     def _with_shift(self, button):
+        # self._shift_value = 1
         return ComboElement(button, modifiers=[self._shift_button])
 
     def _create_controls(self):
@@ -288,7 +289,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._shift_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
-    def _shift_value(self, value):
+    def _shift_value(self,  value):
             if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
                 if value != 0:
                     self._vu.disconnect()
@@ -342,7 +343,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _user_mode_layers(self):
-        return [self._step_sequencer, self._view_control, self._session_zoom]#, self._mixer
+        return [self._sequencer, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
         
