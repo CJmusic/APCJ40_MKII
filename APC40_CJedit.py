@@ -31,6 +31,7 @@ NUM_SCENES = 5
 from _Framework.Control import ButtonControl
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
+from _Framework.SubjectSlot import subject_slot
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
@@ -336,13 +337,18 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
-
+        self._on_matrix_mode_changed.subject = self._matrix_modes
         self._matrix_modes.selected_mode = u'session'
 
+
     def _session_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable()
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _user_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable() 
         return [self._sequencer, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
@@ -362,6 +368,13 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_modes._on_track_offset_changed()
         if self._matrix_modes == 'VU':
             self._update_vu_meters()
+
+
+    @subject_slot('selected_mode')
+    def _on_matrix_mode_changed(self, mode):
+        self._vu.disconnect()
+        self._vu.disable() 
+
 
 
     def get_matrix_button(self, column, row):
