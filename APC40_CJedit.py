@@ -282,7 +282,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._button_rows = self._matrix_rows_raw
         self._vu = VUMeters(self)
         self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-
+        self._vu.disconnect()
+        self._vu.disable()
 
         self._shift_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
@@ -299,7 +300,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     
     def _update_vu_meters(self):
-        if self._vu == None:
+        if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
         else:
             self._vu.disconnect()

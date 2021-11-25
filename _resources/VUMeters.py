@@ -241,17 +241,17 @@ class VUMeters(ControlSurfaceComponent):
         button.send_value(LED_OFF)
 
 
-        # for scene_index in range(CLIP_GRID_Y):
-        #     scene = self._parent._session.scene(scene_index)
-        #     # scene = self._session.scene(scene_index)
+        for scene_index in range(CLIP_GRID_Y):
+            scene = self._parent._session.scene(scene_index)
+            # scene = self._session.scene(scene_index)
 
-        #     if scene_index >= (CLIP_GRID_Y - level):
-        #       # scene._launch_button.send_value(LED_ON, True)
-        #       scene._launch_button.send_value(LED_ON)
-        #       # self._scene_launch_buttons()
-        #     else:
-        #       # scene._launch_button.send_value(LED_OFF, True)
-        #       scene._launch_button.send_value(LED_OFF)
+            if scene_index >= (CLIP_GRID_Y - level):
+              # scene._launch_button.send_value(LED_ON, True)
+              scene._launch_button.send_value(LED_ON)
+              # self._scene_launch_buttons()
+            else:
+              # scene._launch_button.send_value(LED_OFF, True)
+              scene._launch_button.send_value(LED_OFF)
 
 
     # Iterate through every column in the matrix, light up the LEDs based on the level
