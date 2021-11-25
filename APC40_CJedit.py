@@ -72,7 +72,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
 
-            self._create_sequencer()
+            # self._create_sequencer()
             self._create_matrix_modes()
 
 
@@ -98,7 +98,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             return make_button(track, 52, name=u'%d_Stop_Button' % track, skin=self._stop_button_skin)
 
         self._shift_button = make_button(0, 98, name=u'Shift_Button', resource_type=PrioritizedResource)
-        self._bank_button = make_on_off_button(0, 103, name=u'Bank_Button')
+        self._bank_button = make_on_off_button(0, 103, name=u'Bank_Button', resource_type=PrioritizedResource)
         self._left_button = make_button(0, 97, name=u'Bank_Select_Left_Button')
         self._right_button = make_button(0, 96, name=u'Bank_Select_Right_Button')
         self._up_button = make_button(0, 94, name=u'Bank_Select_Up_Button')
@@ -109,9 +109,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._scene_launch_buttons = ButtonMatrixElement(rows=[self._scene_launch_buttons_raw])
         self._matrix_rows_raw = [ [ make_matrix_button(track, scene) for track in range(NUM_TRACKS) ] for scene in range(NUM_SCENES) ]
         self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)
-        self._pan_button = make_on_off_button(0, 87, name=u'Pan_Button')
+        self._pan_button = make_on_off_button(0, 87, name=u'Pan_Button', resource_type=PrioritizedResource)
         self._sends_button = make_on_off_button(0, 88, name=u'Sends_Button', resource_type=PrioritizedResource)
-        self._user_button = make_on_off_button(0, 89, name=u'User_Button')
+        self._user_button = make_on_off_button(0, 89, name=u'User_Button', resource_type=PrioritizedResource)
         self._mixer_encoders = ButtonMatrixElement(rows=[[ make_ring_encoder(48 + track, 56 + track, name=u'Track_Control_%d' % track) for track in range(NUM_TRACKS) ]])
         self._volume_controls = ButtonMatrixElement(rows=[[ make_slider(track, 7, name=u'%d_Volume_Control' % track) for track in range(NUM_TRACKS) ]])
         self._master_volume_control = make_slider(0, 14, name=u'Master_Volume_Control')
