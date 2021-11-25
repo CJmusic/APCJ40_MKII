@@ -142,10 +142,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._skin = make_custom_skin() # is this working ?
             self._clip_creator = ClipCreator()
 
-            self._init_background()
-            self._init_instrument() #this isn't switching to cleanly
-            self._init_drum_component()
-            self._init_step_sequencer() #this isn't working at all
+            self._create_background()
+            self._create_instrument() #this isn't switching to cleanly
+            self._create_drum_component()
+            self._create_step_sequencer() #this isn't working at all
             # self._init_note_repeat() #this is always on the toggle isn't working
             # self._init_VUMeters()
 
@@ -354,30 +354,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._session.set_delete_button(self._nudge_down_button)
         self._session.set_copy_button(self._nudge_up_button)
 
-    def _create_undo_redo(self):
-        # undo_button = ButtonControl(self._with_shift(self._clip_device_button))
-        # redo_button = ButtonControl(self._with_shift(self._detail_view_button), color='Misc.Shift', pressed_color='Misc.ShiftOn', disabled_color='DefaultButton.Disabled')
-        self._actions_component = ActionsComponent(
-            name='Global_Actions',
-            is_enabled=False, 
-            layer=Layer(
-                # undo_button=ButtonControl(self._with_shift(self._clip_device_button)),
-                # redo_button=ButtonControl(self._with_shift(self._detail_view_button)),
-                undo_button=self._undo_button,
-                redo_button=self._redo_button,
-            )
-        )
 
-
-    # @undo_button.pressed
-    # def undo_button(self, button):
-    #     if self.song().can_undo:
-    #         self.song().undo()
-
-    # @redo_button.pressed
-    # def redo_button(self, button):
-    #     if self.song().can_redo:
-    #         self.song().redo()
 
     def _create_mixer(self):
         self._mixer = MixerComponent(NUM_TRACKS, auto_name=True, is_enabled=False, invert_mute_feedback=True, layer=Layer(volume_controls=self._volume_controls, arm_buttons=self._arm_buttons, solo_buttons=self._solo_buttons, mute_buttons=self._mute_buttons, shift_button=self._shift_button, track_select_buttons=self._select_buttons, prehear_volume_control=self._prehear_control, crossfader_control=self._crossfader_control, crossfade_buttons=self._crossfade_buttons))
@@ -415,7 +392,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _product_model_id_byte(self):
         return 41
 
-    def _init_background(self):
+    def _create_background(self):
         self._background = BackgroundComponent(is_root=True)
         self._background.set_enabled(False)
         self._background.layer = Layer(stop_buttons=self._stop_buttons)  # , display_line2=self._display_line2, display_line3=self._display_line3, display_line4=self._display_line4, top_buttons=self._select_buttons, bottom_buttons=self._track_state_buttons, scales_button=self._scale_presets_button, octave_up=self._octave_up_button, octave_down=self._octave_down_button, side_buttons=self._side_buttons, repeat_button=self._repeat_button, accent_button=self._accent_button, double_button=self._double_button, in_button=self._in_button, out_button=self._out_button, param_controls=self._global_param_controls, param_touch=self._global_param_touch_buttons, tempo_control_tap=self._tempo_control_tap, master_control_tap=self._master_volume_control_tap, touch_strip=self._touch_strip_control, touch_strip_tap=self._touch_strip_tap, nav_up_button=self._nav_up_button, nav_down_button=self._nav_down_button, nav_left_button=self._nav_left_button, nav_right_button=self._nav_right_button, aftertouch=self._aftertouch_control, pad_parameters=self._pad_parameter_control, _notification=self._notification.use_single_line(2), priority=consts.BACKGROUND_PRIORITY)
@@ -428,7 +405,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._mod_background.layer = Layer(shift_button=self._shift_button)
 
 
-    def _init_step_sequencer(self):
+    def _create_step_sequencer(self):
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
         self._step_sequencer.layer = self._create_step_sequencer_layer()
 
@@ -464,7 +441,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             drum_bank_down_button=self._down_button)
 
 
-    def _init_drum_component(self):
+    def _create_drum_component(self):
         self._drum_component = DrumGroupComponent(name='Drum_Group', is_enabled=False)
         self._drum_component.layer = Layer(
             drum_matrix=self._session_matrix,
@@ -480,7 +457,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             scroll_up_button=self._with_shift(self._up_button),
             scroll_down_button=self._with_shift(self._down_button))
 
-    def _init_instrument(self):
+    def _create_instrument(self):
         instrument_basic_layer = Layer(
             # octave_strip=self._with_shift(self._touch_strip_control),
             #   capture_button = self._tap_tempo_button,
@@ -550,6 +527,121 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             getattr(self._drum_modes, 'cycle_mode', nop)()
 
         self.reset_controlled_track()
+
+
+
+
+    def _create_vu_controls(self):
+        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
+        is_momentary = True
+        select_buttons = []
+        arm_buttons = []
+        solo_buttons = []
+        mute_buttons = []
+        scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
+
+        stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
+
+
+        for track in range(8):
+            solo_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 49)
+            solo_buttons.append(solo_button)
+            mute_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 50)
+            mute_buttons.append(mute_button)
+            solo_button.name = str(track) + '_Solo_Button'
+            mute_button.name = str(track) + '_Mute_Button'
+            select_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 51))
+            select_buttons[-1].name = str(track) + '_Select_Button'          
+            arm_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 48))
+            arm_buttons[-1].name = str(track) + '_Arm_Button'
+
+        # self._sequencer.set_bank_buttons(tuple(select_buttons))
+        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        self._sequencer.set_button_matrix(self._session_matrix)
+        # self._sequencer.set_follow_button(self._master_select_button)
+        # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
+        self._sequencer.set_shift_button(self._shift_button)
+        # self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
+        # self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
+        # self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
+
+        self.select_buttons = select_buttons
+        self.arm_buttons = arm_buttons
+        self.mute_buttons = mute_buttons
+        self.solo_buttons = solo_buttons
+
+        self.stop_buttons = stop_buttons
+
+        self.scene_launch_buttons = scene_launch_buttons
+
+    def _create_vu(self):
+        # self._parent = self 
+        # self._parent._button_rows = self._matrix_rows_raw
+        # self._parent._track_stop_buttons = self._stop_buttons 
+        # self._parent._scene_launch_buttons = self._scene_launch_buttons
+        # self._parent._matrix = self._session_matrix
+        self._button_rows = self._matrix_rows_raw
+        self._vu = VUMeters(self)
+        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        self._vu.disconnect()
+        self._vu.disable()
+
+        self._shift_button.add_value_listener(self._shift_value)
+        # self._vu._shift_button.add_value_listener(self._vu._shift_value)
+
+    def _shift_value(self,  value):
+            if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
+                if value != 0:
+                    self._vu.disconnect()
+                    self._vu.disable()
+                else:
+                    self._update_vu_meters()
+                    self._vu.enable()
+
+
+    
+    def _update_vu_meters(self):
+        if self._vu == None and self._matrix_modes.selected_mode == 'VU':
+            self._vu = VUMeters(self._parent)
+        else:
+            self._vu.disconnect()
+        self._vu.observe( int(self._session_zoom._session.track_offset()) )
+
+    def _create_matrix_modes(self):
+
+        if self._implicit_arm:
+            self._auto_arm = AutoArmComponent(name='Auto_Arm')
+
+        self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
+        self._matrix_modes.default_behaviour = ImmediateBehaviour()
+        self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
+        self._matrix_modes.add_mode('sends', self._session_mode_layers())
+        self._matrix_modes.add_mode('session', self._session_mode_layers())
+        self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        self._on_matrix_mode_changed.subject = self._matrix_modes
+        self._matrix_modes.selected_mode = u'session'
+
+
+    def _session_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable()
+        return [self._session, self._view_control, self._session_zoom]#, self._mixer
+
+    def _vu_mode_layers(self):
+        
+        self._session.set_enabled(False)
+        # self._session_zoom._on_zoom_value(1) #zoom out
+        self._session_zoom.set_enabled(True)
+        self._session_zoom._is_zoomed_out = False
+        # self._session_zoom.set_zoom_button(self._parent._shift_button)
+        self._session_zoom.update()
+
+        self._update_vu_meters()
+        return [self._vu, self._view_control, self._matrix_background]
+
 
 
     def _user_mode_layers(self):
@@ -688,135 +780,6 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
 
-    @contextmanager
-    def component_guard(self):
-        """ Customized to inject additional things """
-        with super(APC40_CJedit, self).component_guard():
-
-            with self.make_injector().everywhere():
-                yield
-
-    def make_injector(self):
-        """ Adds some additional stuff to the injector, used in BaseMessenger """
-        return inject(
-            double_press_context=const(self._double_press_context),
-            control_surface=const(self),
-            log_message=const(self.log_message))
-
-
-
-    def _create_vu_controls(self):
-        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
-        is_momentary = True
-        select_buttons = []
-        arm_buttons = []
-        solo_buttons = []
-        mute_buttons = []
-        scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
-
-        stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
-
-
-        for track in range(8):
-            solo_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 49)
-            solo_buttons.append(solo_button)
-            mute_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 50)
-            mute_buttons.append(mute_button)
-            solo_button.name = str(track) + '_Solo_Button'
-            mute_button.name = str(track) + '_Mute_Button'
-            select_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 51))
-            select_buttons[-1].name = str(track) + '_Select_Button'          
-            arm_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 48))
-            arm_buttons[-1].name = str(track) + '_Arm_Button'
-
-        # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
-        self._sequencer.set_button_matrix(self._session_matrix)
-        # self._sequencer.set_follow_button(self._master_select_button)
-        # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
-        self._sequencer.set_shift_button(self._shift_button)
-        # self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
-        # self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
-        # self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
-
-        self.select_buttons = select_buttons
-        self.arm_buttons = arm_buttons
-        self.mute_buttons = mute_buttons
-        self.solo_buttons = solo_buttons
-
-        self.stop_buttons = stop_buttons
-
-        self.scene_launch_buttons = scene_launch_buttons
-
-    def _create_vu(self):
-        # self._parent = self 
-        # self._parent._button_rows = self._matrix_rows_raw
-        # self._parent._track_stop_buttons = self._stop_buttons 
-        # self._parent._scene_launch_buttons = self._scene_launch_buttons
-        # self._parent._matrix = self._session_matrix
-        self._button_rows = self._matrix_rows_raw
-        self._vu = VUMeters(self)
-        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        self._vu.disconnect()
-        self._vu.disable()
-
-        self._shift_button.add_value_listener(self._shift_value)
-        # self._vu._shift_button.add_value_listener(self._vu._shift_value)
-
-    def _shift_value(self,  value):
-            if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
-                if value != 0:
-                    self._vu.disconnect()
-                    self._vu.disable()
-                else:
-                    self._update_vu_meters()
-                    self._vu.enable()
-
-
-    
-    def _update_vu_meters(self):
-        if self._vu == None and self._matrix_modes.selected_mode == 'VU':
-            self._vu = VUMeters(self._parent)
-        else:
-            self._vu.disconnect()
-        self._vu.observe( int(self._session_zoom._session.track_offset()) )
-
-    def _create_matrix_modes(self):
-
-        if self._implicit_arm:
-            self._auto_arm = AutoArmComponent(name='Auto_Arm')
-
-        self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
-        self._matrix_modes.default_behaviour = ImmediateBehaviour()
-        self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        self._matrix_modes.add_mode('sends', self._session_mode_layers())
-        self._matrix_modes.add_mode('session', self._session_mode_layers())
-        self._matrix_modes.add_mode('user', self._user_mode_layers())
-        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
-
-        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
-        self._on_matrix_mode_changed.subject = self._matrix_modes
-        self._matrix_modes.selected_mode = u'session'
-
-
-    def _session_mode_layers(self):
-        self._vu.disconnect()
-        self._vu.disable()
-        return [self._session, self._view_control, self._session_zoom]#, self._mixer
-
-    def _vu_mode_layers(self):
-        
-        self._session.set_enabled(False)
-        # self._session_zoom._on_zoom_value(1) #zoom out
-        self._session_zoom.set_enabled(True)
-        self._session_zoom._is_zoomed_out = False
-        # self._session_zoom.set_zoom_button(self._parent._shift_button)
-        self._session_zoom.update()
-
-        self._update_vu_meters()
-        return [self._vu, self._view_control, self._matrix_background]
-
-
     def _on_track_offset_changed(self):
         self._matrix_modes._on_track_offset_changed()
         if self._matrix_modes == 'VU':
@@ -838,3 +801,19 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     # def disconnect(self):
     #     ControlSurface.disconnect(self)
     #     return None
+
+
+    @contextmanager
+    def component_guard(self):
+        """ Customized to inject additional things """
+        with super(APC40_CJedit, self).component_guard():
+
+            with self.make_injector().everywhere():
+                yield
+
+    def make_injector(self):
+        """ Adds some additional stuff to the injector, used in BaseMessenger """
+        return inject(
+            double_press_context=const(self._double_press_context),
+            control_surface=const(self),
+            log_message=const(self.log_message))

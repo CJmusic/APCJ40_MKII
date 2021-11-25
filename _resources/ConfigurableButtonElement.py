@@ -1,71 +1,135 @@
-# http://remotescripts.blogspot.com
-
-# emacs-mode: -*- python-*-
-#From Launchpad scripts
-
-import Live
-from _Framework.ButtonElement import *
+#Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/ConfigurableButtonElement.py
+from _Framework.ButtonElement import ON_VALUE, OFF_VALUE
+from .ButtonElement import ButtonElement
+from _Framework.Skin import Skin, SkinColorMissingError
+from .Colors import Basic
+from .MatrixMaps import NON_FEEDBACK_CHANNEL
 
 class ConfigurableButtonElement(ButtonElement):
-    """ Special button class that can be configured with custom on- and off-values """
+    """
+    Special button class that can be configured with custom on-
+    and off-values.
+    
+    A ConfigurableButtonElement can have states other than True or
+    False, which can be defined by setting the 'states' property.
+    Thus 'set_light' can take any state or skin color.
+    """
 
-    def __init__(self, is_momentary, msg_type, channel, identifier):
-        ButtonElement.__init__(self, is_momentary, msg_type, channel, identifier)
-        self._on_value = 1
-        self._off_value = 0
-        self._is_enabled = True
-        self._is_notifying = False
+    class Colors:
+
+        class DefaultButton:
+            On = Basic.ON
+            Off = Basic.HALF
+            Disabled = Basic.OFF
+            Alert = Basic.FULL_BLINK_FAST
+
+    default_skin = Skin(Colors)
+    default_states = {True: 'DefaultButton.On',
+     False: 'DefaultButton.Off'}
+    num_delayed_messages = 2
+    send_depends_on_forwarding = False
+
+    def __init__(self, is_momentary, msg_type, channel, identifier, skin = None, is_rgb = False, default_states = None, *a, **k):
+        super(ConfigurableButtonElement, self).__init__(is_momentary, msg_type, channel, identifier, skin=(skin or self.default_skin), *a, **k)
+        if default_states is not None:
+            self.default_states = default_states
+        self.states = dict(self.default_states)
+        self.is_rgb = is_rgb
         self._force_next_value = False
-        self._pending_listeners = []
+        # TODO check this: self.set_channel(NON_FEEDBACK_CHANNEL)
+        return
+
+    @property
+    def _on_value(self):
+        return self.states[True]
+
+    @property
+    def _off_value(self):
+        return self.states[False]
+
+    @property
+    def on_value(self):
+        return self._try_fetch_skin_value(self._on_value)
+
+    @property
+    def off_value(self):
+        return self._try_fetch_skin_value(self._off_value)
+
+    def _try_fetch_skin_value(self, value):
+        try:
+            return self._skin[value]
+        except SkinColorMissingError:
+            return value
+
+    def reset(self):
+        self.states = dict(self.default_states)
+        self.set_light('DefaultButton.Disabled')
+        self.set_identifier(self._original_identifier)
+        # TODO check this: self.set_channel(NON_FEEDBACK_CHANNEL)
+        self.set_enabled(True)
+
+    def reset_state(self):
+        super(ConfigurableButtonElement, self).reset_state()
+        self.states = dict(self.default_states)
 
     def set_on_off_values(self, on_value, off_value):
-        # raise on_value in range(128) or AssertionError
-        # raise off_value in range(128) or AssertionError
-        self.clear_send_cache()
-        if (on_value in range(128)):
-            self._on_value = on_value
-        if (off_value in range(128)):
-            self._off_value = off_value
+        self.states[True] = on_value
+        self.states[False] = off_value
 
     def set_force_next_value(self):
         self._force_next_value = True
 
     def set_enabled(self, enabled):
-        self._is_enabled = enabled
+        self.suppress_script_forwarding = not enabled
 
-    def turn_on(self):
-        self.send_value(self._on_value)
+    def is_enabled(self):
+        return not self.suppress_script_forwarding
 
-    def turn_off(self):
-        self.send_value(self._off_value)
+    def set_light(self, value):
+        super(ConfigurableButtonElement, self).set_light(self.states.get(value, value))
+
+    def send_value(self, value, **k):
+        if value is ON_VALUE:
+            self._do_send_on_value()
+        elif value is OFF_VALUE:
+            self._do_send_off_value()
+        else:
+            super(ConfigurableButtonElement, self).send_value(value, **k)
+
+    def _do_send_on_value(self):
+        self._skin[self._on_value].draw(self)
+
+    def _do_send_off_value(self):
+        self._skin[self._off_value].draw(self)
+
+    def script_wants_forwarding(self):
+        return not self.suppress_script_forwarding
+
+
+class PadButtonElement(ConfigurableButtonElement):
+    """
+    Button element for holding Push pressure-sensitive pad. The pad_id
+    parameter defines the Pad coordine id used in the sysex protocol.
+    """
+
+    def __init__(self, pad_id = None, pad_sensitivity_update = None, *a, **k):
+        if pad_id is None:
+            raise AssertionError
+        super(PadButtonElement, self).__init__(*a, **k)
+        self._sensitivity_profile = 'default'
+        self._pad_id = pad_id
+        self._pad_sensitivity_update = pad_sensitivity_update
+
+    def _get_sensitivity_profile(self):
+        return self._sensitivity_profile
+
+    def _set_sensitivity_profile(self, profile):
+        if profile != self._sensitivity_profile:
+            self._sensitivity_profile = profile
+            self._pad_sensitivity_update.set_pad(self._pad_id, profile)
+
+    sensitivity_profile = property(_get_sensitivity_profile, _set_sensitivity_profile)
 
     def reset(self):
-        self.send_value(0)
-
-    def add_value_listener(self, callback, identify_sender = False):
-        if not self._is_notifying:
-            ButtonElement.add_value_listener(self, callback, identify_sender)
-        else:
-            self._pending_listeners.append((callback, identify_sender))
-
-    def receive_value(self, value):
-        self._is_notifying = True
-        ButtonElement.receive_value(self, value)
-        self._is_notifying = False
-        for listener in self._pending_listeners:
-            self.add_value_listener(listener[0], listener[1])
-
-        self._pending_listeners = []
-
-    def send_value(self, value, force = False):
-        ButtonElement.send_value(self, value, force or self._force_next_value)
-        self._force_next_value = False
-
-    def install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback):
-        if self._is_enabled:
-            ButtonElement.install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback)
-        elif self._msg_channel != self._original_channel or self._msg_identifier != self._original_identifier:
-            install_translation_callback(self._msg_type, self._original_identifier, self._original_channel, self._msg_identifier, self._msg_channel)
-# okay decompyling D:\Studio-F\Manuals\Programming Languages\Python Live API\RemoteScripts9.0b\Launchpad\ConfigurableButtonElement.pyc 
-# decompiled 1 files: 1 okay, 0 failed, 0 verify failed
-# 2013.03.03 14:53:42 W. Europe Standard Time
+        self.sensitivity_profile = 'default'
+        super(PadButtonElement, self).reset()
