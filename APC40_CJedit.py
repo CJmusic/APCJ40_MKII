@@ -274,17 +274,21 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.scene_launch_buttons = scene_launch_buttons
 
     def _create_vu(self):
-        self._parent = self 
-        self._parent._button_rows = self._matrix_rows_raw
-        self._parent._track_stop_buttons = self._stop_buttons 
-        self._parent._scene_launch_buttons = self._scene_launch_buttons
-        self._parent._matrix = self._session_matrix
+        # self._parent = self 
+        # self._parent._button_rows = self._matrix_rows_raw
+        # self._parent._track_stop_buttons = self._stop_buttons 
+        # self._parent._scene_launch_buttons = self._scene_launch_buttons
+        # self._parent._matrix = self._session_matrix
+        self._button_rows = self._matrix_rows_raw
+        self._vu = VUMeters(self)
+        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
 
-        self._vu = VUMeters(self._parent)
+
         self._shift_button.add_value_listener(self._shift_value)
+        # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self, value):
-            if (self._matrix_modes == 'VU' and self._vu != None):
+            if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
                 if value != 0:
                     self._vu.disconnect()
                     self._vu.disable()
@@ -292,6 +296,14 @@ class APC40_CJedit(APC, OptimizedControlSurface):
                     self._update_vu_meters()
                     self._vu.enable()
 
+
+    
+    def _update_vu_meters(self):
+        if self._vu == None:
+            self._vu = VUMeters(self._parent)
+        else:
+            self._vu.disconnect()
+        self._vu.observe( int(self._session_zoom._session.track_offset()) )
 
     def _create_matrix_modes(self):
         # self._matrix_modes = MatrixModesComponent(self._session_matrix, self._session, self._session_zoom, tuple(self._stop_buttons), self)
@@ -323,6 +335,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
 
+        self._matrix_modes.selected_mode = u'session'
+
     def _session_mode_layers(self):
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
@@ -330,27 +344,22 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         return [self._step_sequencer, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
+        
+        self._session.set_enabled(False)
+        # self._session_zoom._on_zoom_value(1) #zoom out
+        self._session_zoom.set_enabled(True)
+        self._session_zoom._is_zoomed_out = False
+        # self._session_zoom.set_zoom_button(self._parent._shift_button)
+        self._session_zoom.update()
+
+        self._update_vu_meters()
         return [self._vu, self._view_control, self._session_zoom]
 
 
     def _on_track_offset_changed(self):
         self._matrix_modes._on_track_offset_changed()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if self._matrix_modes == 'VU':
+            self._update_vu_meters()
 
 
     def get_matrix_button(self, column, row):
