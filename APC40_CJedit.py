@@ -2,6 +2,9 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from builtins import range
 from functools import partial
+
+from contextlib import contextmanager
+
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.ComboElement import ComboElement, DoublePressElement, MultiElement
 from _Framework.ControlSurface import OptimizedControlSurface
@@ -32,6 +35,12 @@ from _Framework.Control import ButtonControl
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot
+from _Framework.Util import const, recursive_map
+from _Framework.ComboElement import ComboElement, DoublePressElement, MultiElement, DoublePressContext
+from ._resources.PlayheadElement import PlayheadElement
+
+from _Framework.Dependency import inject
+
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
@@ -39,8 +48,15 @@ from ._resources.MatrixModesComponent import MatrixModesComponent
 from ._resources.ShiftableSelectorComponent import ShiftableSelectorComponent
 from ._resources.StepSequencerComponent import StepSequencerComponent
 from ._resources.ConfigurableButtonElement import ConfigurableButtonElement 
+from ._resources.ButtonSliderElement import ButtonSliderElement
+
+from ._resources.StepSeqComponent import StepSeqComponent, DrumGroupFinderComponent
+from ._resources.DrumGroupComponent import DrumGroupComponent
+from ._resources.GridResolution import GridResolution
 
 from ._resources.VUMeters import VUMeters
+
+
 
 
 class APC40_CJedit(APC, OptimizedControlSurface):
@@ -54,13 +70,17 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._implicit_arm = False
         self._sequencer = None
         self._vu = None
+
+        self._double_press_context = DoublePressContext()
+
+
         with self.component_guard():
             self._create_controls()
             self._create_bank_toggle()
 
             self._create_actions()
             self._create_vu()
-            # self._create_step_sequencer()
+            self._create_step_sequencer()
             # self._create_instrument()
 
             self._create_session()
@@ -159,6 +179,16 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._shifted_matrix = ButtonMatrixElement(rows=recursive_map(self._with_shift, self._matrix_rows_raw))
         self._shifted_scene_buttons = ButtonMatrixElement(rows=[[ self._with_shift(button) for button in self._scene_launch_buttons_raw ]])
 
+        self._grid_resolution = GridResolution()
+        # self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
+        self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
+        self._velocity_slider.resource_type = PrioritizedResource
+        double_press_rows = recursive_map(DoublePressElement, self._matrix_rows_raw)
+        self._double_press_matrix = ButtonMatrixElement(name='Double_Press_Matrix', rows=double_press_rows)
+        self._double_press_event_matrix = ButtonMatrixElement(name='Double_Press_Event_Matrix',
+                                                              rows=recursive_map(lambda x: x.double_press,
+                                                                                 double_press_rows))
+        self._playhead = PlayheadElement(self._c_instance.playhead)
 
     def _create_bank_toggle(self):
         self._bank_toggle = BankToggleComponent(is_enabled=False, layer=Layer(bank_toggle_button=self._bank_button))
@@ -230,6 +260,33 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _create_recording(self):
         record_button = MultiElement(self._session_record_button, self._foot_pedal_button.single_press)
         self._session_recording = SessionRecordingComponent(ClipCreator(), self._view_control, name=u'Session_Recording', is_enabled=False, layer=Layer(new_button=self._foot_pedal_button.double_press, record_button=record_button, _uses_foot_pedal=self._foot_pedal_button))
+
+    def _create_step_sequencer(self):
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
+        self._step_sequencer.layer = self._create_step_sequencer_layer()
+
+
+    def _create_step_sequencer_layer(self):
+        return Layer(
+            velocity_slider=self._velocity_slider,
+            drum_matrix=self._session_matrix.submatrix[:4, 0:5],
+            # [4, 1:5],  mess with this for possible future 32 pad drum rack :
+
+            button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
+
+            #  next_page_button = self._bank_button,
+
+            #select_button=self._user_button,
+            delete_button=self._stop_all_button,
+            playhead=self._playhead,
+            quantization_buttons=self._stop_buttons,
+            shift_button=self._shift_button,
+            loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
+            # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
+            # changed from [:8, :1] no change noticed as of yet
+            drum_bank_up_button=self._up_button,
+            drum_bank_down_button=self._down_button)
 
 
     def _create_vu_controls(self):
@@ -349,7 +406,23 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _user_mode_layers(self):
         self._vu.disconnect()
         self._vu.disable() 
-        return [self._sequencer, self._view_control, self._session_zoom]#, self._mixer
+        # return [self._sequencer, self._view_control, self._session_zoom]#, self._mixer
+
+        self._drum_group_finder = DrumGroupFinderComponent()
+        self._on_drum_group_changed.subject = self._drum_group_finder
+
+        self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
+        self._drum_modes.add_mode('sequencer', self._step_sequencer)
+        #self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
+
+        self._drum_modes.selected_mode = 'sequencer'
+
+        #self._user_modes = ModesComponent(name='User_Modes', is_enabled=False)
+        #self._user_modes.add_mode('drums', [self._drum_modes])
+        #self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
+        #self._user_modes.selected_mode = 'drums'
+
+        return [self._drum_modes, self._view_control, self._session_zoom]  # , self._mixer
 
     def _vu_mode_layers(self):
         
@@ -375,6 +448,15 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._vu.disconnect()
         self._vu.disable() 
 
+    @subject_slot('drum_group')
+    def _on_drum_group_changed(self):
+        #self._shift_button.receive_value(127)
+        #self.schedule_message(1, self.resetshift)
+        self._matrix_background.set_enabled(True)
+        self.schedule_message(1, self.disablebackground)
+
+        if self._matrix_modes.selected_mode != 'session':
+            pass
 
 
     def get_matrix_button(self, column, row):
@@ -382,3 +464,21 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     def _product_model_id_byte(self):
         return 41
+
+
+    @contextmanager
+    def component_guard(self):
+        """ Customized to inject additional things """
+        with super(APC40_CJedit, self).component_guard():
+
+            with self.make_injector().everywhere():
+                yield
+
+    def make_injector(self):
+        """ Adds some additional stuff to the injector, used in BaseMessenger """
+        return inject(
+            double_press_context=const(self._double_press_context),
+            control_surface=const(self),
+
+            log_message=const(self.log_message))
+
