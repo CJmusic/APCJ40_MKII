@@ -73,7 +73,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
 
-            self._create_sequencer()
+            self._create_vu_controls()
             self._create_matrix_modes()
 
 
@@ -232,7 +232,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._session_recording = SessionRecordingComponent(ClipCreator(), self._view_control, name=u'Session_Recording', is_enabled=False, layer=Layer(new_button=self._foot_pedal_button.double_press, record_button=record_button, _uses_foot_pedal=self._foot_pedal_button))
 
 
-    def _create_sequencer(self):
+    def _create_vu_controls(self):
         self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
         is_momentary = True
         select_buttons = []
@@ -256,15 +256,15 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 48))
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
-        self._sequencer.set_bank_buttons(tuple(select_buttons))
-        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        # self._sequencer.set_bank_buttons(tuple(select_buttons))
+        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
-        self._sequencer.set_follow_button(self._master_select_button)
-        self._sequencer.set_velocity_buttons(tuple(arm_buttons))
+        # self._sequencer.set_follow_button(self._master_select_button)
+        # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
         self._sequencer.set_shift_button(self._shift_button)
-        self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
-        self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
-        self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
+        # self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
+        # self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
+        # self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
 
         self.select_buttons = select_buttons
         self.arm_buttons = arm_buttons
