@@ -163,6 +163,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
+        self._matrix_modes.selected_mode = u'session'
 
     def _with_shift(self, button):
         return ComboElement(button, modifiers=[self._shift_button])
@@ -556,7 +557,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
         # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
         # self._sequencer.set_follow_button(self._master_select_button)
         # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
