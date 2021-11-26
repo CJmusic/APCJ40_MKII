@@ -207,6 +207,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
                                          ]
         self._scene_launch_buttons = ButtonMatrixElement(rows=[
          self._scene_launch_buttons_raw])
+        self._scene_launch_buttons.resource_type = PrioritizedResource
+
         self._matrix_rows_raw = [ [ make_matrix_button(track, scene) for track in range(NUM_TRACKS) ] for scene in range(NUM_SCENES)
                                 ]
         self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)
@@ -574,6 +576,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.stop_buttons = stop_buttons
 
         self.scene_launch_buttons = scene_launch_buttons
+        self._scene_launch_buttons.resource_type = PrioritizedResource
 
     def _create_vu(self):
 
