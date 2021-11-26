@@ -409,10 +409,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer(self):
-        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
+        self._step_sequencer.layer = self._create_step_sequencer_layer()
         self._step_sequencer.set_next_loop_page_button = self._right_button
         self._step_sequencer.set_prev_loop_page_button = self._left_button
-        self._step_sequencer.layer = self._create_step_sequencer_layer()
 
 
         # self._drum_velocity_levels = VelocityLevelsComponent(target_note_provider=self._drum_component, skin_base_key=self.drum_group_velocity_levels_skin, is_enabled=False, layer=Layer(velocity_levels=u'velocity_levels_element', select_button=u'select_button'))
@@ -659,10 +659,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
 
-    def _user_mode_layers(self):
-        self._vu.disconnect()
-        self._vu.disable()
-
+    def _user_mode_layers(self): 
         self._drum_group_finder = DrumGroupFinderComponent()
         self._on_drum_group_changed.subject = self._drum_group_finder
 

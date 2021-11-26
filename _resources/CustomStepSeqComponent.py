@@ -129,7 +129,7 @@ class StepSeqComponent(CompoundComponent):
 
     #  del_button = ButtonControl()
 
-    def __init__(self, clip_creator=None, skin=None, grid_resolution=None, note_editor_settings=None, *a, **k):
+    def __init__(self, clip_creator=None, skin=None, grid_resolution=None, playhead = None, note_editor_settings=None, *a, **k):
         super(StepSeqComponent, self).__init__(*a, **k)
         if not clip_creator:
             raise AssertionError
@@ -177,7 +177,8 @@ class StepSeqComponent(CompoundComponent):
 
         self._on_detail_clip_changed.subject = self.song().view
         self._detail_clip = None
-        self._playhead = None
+        # self._playhead = None
+        self._playhead = playhead
         self._playhead_component = self.register_component(PlayheadComponent(
             grid_resolution=grid_resolution,
             paginator=self._paginator,

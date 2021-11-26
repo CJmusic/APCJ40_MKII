@@ -139,7 +139,7 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
         if matrix:
             for button, _ in filter(first, matrix.iterbuttons()):
                 # button.set_channel(NON_FEEDBACK_CHANNEL)
-                button.set_channel(PLAYHEAD_FEEDBACK_CHANNEL)
+                button.set_channel(PLAYHEAD_FEEDBACK_CHANNEL) # Changed to test CJ 2021-11-26
 
 
     def selected_track(self):
