@@ -410,6 +410,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     def _create_step_sequencer(self):
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
+        self._step_sequencer.set_next_loop_page_button = self._right_button
+        self._step_sequencer.set_prev_loop_page_button = self._left_button
         self._step_sequencer.layer = self._create_step_sequencer_layer()
 
 
@@ -424,10 +426,12 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _create_step_sequencer_layer(self):
         return Layer(
             velocity_slider=self._velocity_slider,
-            drum_matrix=self._session_matrix.submatrix[:4, 0:5],
+            drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
             # [4, 1:5],  mess with this for possible future 32 pad drum rack :
 
-            button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
+            # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
+            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
 
             #  next_page_button = self._bank_button,
 
@@ -436,9 +440,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             playhead=self._playhead,
             quantization_buttons=self._stop_buttons,
             shift_button=self._shift_button,
-            loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
+            # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
+            loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
             # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
-            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
+            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
             # changed from [:8, :1] no change noticed as of yet
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button)
@@ -626,8 +632,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
         self._matrix_modes.add_mode('sends', self._session_mode_layers())
         self._matrix_modes.add_mode('session', self._session_mode_layers())
-        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
         self._on_matrix_mode_changed.subject = self._matrix_modes
@@ -654,6 +660,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _user_mode_layers(self):
+        self._vu.disconnect()
+        self._vu.disable()
+
         self._drum_group_finder = DrumGroupFinderComponent()
         self._on_drum_group_changed.subject = self._drum_group_finder
 
