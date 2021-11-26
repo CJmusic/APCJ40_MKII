@@ -556,7 +556,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
         # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
         # self._sequencer.set_follow_button(self._master_select_button)
         # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
@@ -575,6 +575,12 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.scene_launch_buttons = scene_launch_buttons
 
     def _create_vu(self):
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
         # self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
         # self._parent._track_stop_buttons = self._stop_buttons 
@@ -582,7 +588,14 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         # self._parent._matrix = self._session_matrix
         self._button_rows = self._matrix_rows_raw
         self._vu = VUMeters(self)
-        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix,track_bank_left_button=when_bank_off(self._left_button),
+                                                            track_bank_right_button=when_bank_off(self._right_button),
+                                                            scene_bank_up_button=when_bank_off(self._up_button),
+                                                            scene_bank_down_button=when_bank_off(self._down_button),
+                                                            page_left_button=when_bank_on(self._left_button),
+                                                            page_right_button=when_bank_on(self._right_button),
+                                                            page_up_button=when_bank_on(self._up_button),
+                                                            page_down_button=when_bank_on(self._down_button),)
         self._vu.disconnect()
         self._vu.disable()
 
@@ -640,7 +653,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._session_zoom.update()
 
         self._update_vu_meters()
-        return [self._vu, self._view_control, self._matrix_background]
+        return [self._sequencer, self._view_control, self._session_zoom]
 
 
 
@@ -671,21 +684,21 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     #     return [self._user_modes, self._view_control, self._matrix_background]  # , self._mixer
 
-    def _init_note_repeat(self):
-        self._note_repeat = NoteRepeatComponent(is_enabled=False,name='Note_Repeat')
-        self._note_repeat.set_enabled(False)
-        self._note_repeat.set_note_repeat(self._c_instance.note_repeat)
-        self._note_repeat.layer = Layer(
-            # aftertouch_control=self._aftertouch_control,
-            select_buttons=self._shifted_stop_buttons
-            # pad_parameters=self._pad_parameter_control
-        )
-        self._note_repeat.layer.priority = consts.DIALOG_PRIORITY
-        self._note_repeat_enabler = EnablingModesComponent(name='Note_Repeat_Enabler', component=self._note_repeat,
-                                                           toggle_value='DefaultButton.Alert',
-                                                           disabled_value='DefaultButton.On')
-        self._note_repeat_enabler.set_enabled(False)
-        self._note_repeat_enabler.layer = Layer(toggle_button=self._with_shift(self._bank_button))
+    # def _init_note_repeat(self):
+    #     self._note_repeat = NoteRepeatComponent(is_enabled=False,name='Note_Repeat')
+    #     self._note_repeat.set_enabled(False)
+    #     self._note_repeat.set_note_repeat(self._c_instance.note_repeat)
+    #     self._note_repeat.layer = Layer(
+    #         # aftertouch_control=self._aftertouch_control,
+    #         select_buttons=self._shifted_stop_buttons
+    #         # pad_parameters=self._pad_parameter_control
+    #     )
+    #     self._note_repeat.layer.priority = consts.DIALOG_PRIORITY
+    #     self._note_repeat_enabler = EnablingModesComponent(name='Note_Repeat_Enabler', component=self._note_repeat,
+    #                                                        toggle_value='DefaultButton.Alert',
+    #                                                        disabled_value='DefaultButton.On')
+    #     self._note_repeat_enabler.set_enabled(False)
+    #     self._note_repeat_enabler.layer = Layer(toggle_button=self._with_shift(self._bank_button))
 
 
 
@@ -724,12 +737,12 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     @subject_slot('drum_group')
     def _on_drum_group_changed(self):
         #self._shift_button.receive_value(127)
-        #self.schedule_message(1, self.resetshift)
+        # #self.schedule_message(1, self.resetshift)
         self._matrix_background.set_enabled(True)
         self.schedule_message(1, self.disablebackground)
-
-        if self._matrix_modes.selected_mode != 'session':
-            pass
+        self.reset_controlled_track()
+        # if self._matrix_modes.selected_mode != 'session':
+        #     pass
             #self._select_note_mode()
 
     def resetshift(self):
@@ -747,14 +760,20 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _on_matrix_mode_changed(self, mode):
         #self._shift_button.receive_value(127)
         #self.schedule_message(1, self.resetshift)
-        self._matrix_background.set_enabled(True)
-        self.schedule_message(1, self.disablebackground)
+        self._vu.disconnect()
+        self._vu.disable() 
+
+        # self._matrix_background.set_enabled(True)
+        # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
 
         if self._matrix_modes.selected_mode != 'disabled':
             if self._implicit_arm:
                 self._update_auto_arm(selected_mode=mode)
             self.reset_controlled_track()
+
+        # if self._matrix_modes.selected_mode == ''
+
         self.reset_controlled_track()
 
 
@@ -792,21 +811,17 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._update_vu_meters()
 
 
-    @subject_slot('selected_mode')
-    def _on_matrix_mode_changed(self, mode):
-        self._vu.disconnect()
-        self._vu.disable() 
-
-
 
     def get_matrix_button(self, column, row):
         return self._matrix_rows_raw[row][column]
 
     def _product_model_id_byte(self):
         return 41
-    # def disconnect(self):
-    #     ControlSurface.disconnect(self)
-    #     return None
+
+    def disconnect(self):
+        self._background.set_enabled(False)
+        ControlSurface.disconnect(self)
+        return None
 
 
     @contextmanager
