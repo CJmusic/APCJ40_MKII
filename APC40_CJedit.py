@@ -143,7 +143,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._clip_creator = ClipCreator()
 
             self._create_background()
-            self._create_instrument() #this isn't switching to cleanly
+            # self._create_instrument() #this isn't switching to cleanly
             self._create_drum_component()
             self._create_step_sequencer() #this isn't working at all
             # self._init_note_repeat() #this is always on the toggle isn't working
@@ -457,34 +457,34 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             scroll_up_button=self._with_shift(self._up_button),
             scroll_down_button=self._with_shift(self._down_button))
 
-    def _create_instrument(self):
-        instrument_basic_layer = Layer(
-            # octave_strip=self._with_shift(self._touch_strip_control),
-            #   capture_button = self._tap_tempo_button,
-            #scales_toggle_button=self._metronome_button,
-            octave_up_button=self._up_button,
-            octave_down_button=self._down_button,
-            scale_up_button=self._with_shift(self._up_button),
-            scale_down_button=self._with_shift(self._down_button))
+    # def _create_instrument(self):
+    #     instrument_basic_layer = Layer(
+    #         # octave_strip=self._with_shift(self._touch_strip_control),
+    #         #   capture_button = self._tap_tempo_button,
+    #         #scales_toggle_button=self._metronome_button,
+    #         octave_up_button=self._up_button,
+    #         octave_down_button=self._down_button,
+    #         scale_up_button=self._with_shift(self._up_button),
+    #         scale_down_button=self._with_shift(self._down_button))
 
-        self._instrument = MelodicComponent(skin=self._skin, is_enabled=False,
-                                            clip_creator=self._clip_creator, name='Melodic_Component',
-                                            grid_resolution=self._grid_resolution,
-                                            note_editor_settings=self._add_note_editor_setting(),
-                                            layer=self._create_instrument_layer(),
-                                            instrument_play_layer=Layer(
-                                                octave_up_button=self._up_button,
-                                                octave_down_button=self._down_button,
-                                                scale_up_button=self._with_shift(self._up_button),
-                                                scale_down_button=self._with_shift(self._down_button),
-                                                matrix=self._session_matrix
-                                            ),
-                                            # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
-                                            # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
-                                            # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
-                                            instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
-                                            )
-        self._on_note_editor_layout_changed.subject = self._instrument
+    #     self._instrument = MelodicComponent(skin=self._skin, is_enabled=False,
+    #                                         clip_creator=self._clip_creator, name='Melodic_Component',
+    #                                         grid_resolution=self._grid_resolution,
+    #                                         note_editor_settings=self._add_note_editor_setting(),
+    #                                         layer=self._create_instrument_layer(),
+    #                                         instrument_play_layer=Layer(
+    #                                             octave_up_button=self._up_button,
+    #                                             octave_down_button=self._down_button,
+    #                                             scale_up_button=self._with_shift(self._up_button),
+    #                                             scale_down_button=self._with_shift(self._down_button),
+    #                                             matrix=self._session_matrix
+    #                                         ),
+    #                                         # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
+    #                                         # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
+    #                                         # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
+    #                                         instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
+    #                                         )
+    #     self._on_note_editor_layout_changed.subject = self._instrument
 
 
 
@@ -501,32 +501,32 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
 
 
-    def enter_note_mode_layout(self):
-        self._matrix_modes.selected_mode = 'user'
-        self._select_note_mode()
+    # def enter_note_mode_layout(self):
+    #     self._matrix_modes.selected_mode = 'user'
+    #     self._select_note_mode()
 
-        #if self._user_modes.selected_mode == 'instrument':
-        #    self._instrument._set_selected_mode(self._instrument.selected_mode)
-        #el
-        if self._user_modes.selected_mode == 'drums':
-            self._drum_modes._set_selected_mode(self._drum_modes.selected_mode)
+    #     #if self._user_modes.selected_mode == 'instrument':
+    #     #    self._instrument._set_selected_mode(self._instrument.selected_mode)
+    #     #el
+    #     if self._user_modes.selected_mode == 'drums':
+    #         self._drum_modes._set_selected_mode(self._drum_modes.selected_mode)
 
-        self.reset_controlled_track()
+    #     self.reset_controlled_track()
 
-    def exit_note_mode_layout(self):
-        self.reset_controlled_track()
+    # def exit_note_mode_layout(self):
+    #     self.reset_controlled_track()
 
-    def switch_note_mode_layout(self):
-        self._matrix_modes.selected_mode = 'user'
-        self._select_note_mode()
+    # def switch_note_mode_layout(self):
+    #     self._matrix_modes.selected_mode = 'user'
+    #     self._select_note_mode()
 
-        #if self._user_modes.selected_mode == 'instrument':
-        #   getattr(self._instrument, 'cycle_mode', nop)()
-        #el
-        if self._user_modes.selected_mode == 'drums':
-            getattr(self._drum_modes, 'cycle_mode', nop)()
+    #     #if self._user_modes.selected_mode == 'instrument':
+    #     #   getattr(self._instrument, 'cycle_mode', nop)()
+    #     #el
+    #     if self._user_modes.selected_mode == 'drums':
+    #         getattr(self._drum_modes, 'cycle_mode', nop)()
 
-        self.reset_controlled_track()
+    #     self.reset_controlled_track()
 
 
 
@@ -648,27 +648,28 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._drum_group_finder = DrumGroupFinderComponent()
         self._on_drum_group_changed.subject = self._drum_group_finder
 
-        self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
-        self._drum_modes.add_mode('sequencer', self._step_sequencer)
-        #self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
+        # self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
+        # self._drum_modes.add_mode('sequencer', self._step_sequencer)
+        # #self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
 
-        self._drum_modes.selected_mode = 'sequencer'
+        # self._drum_modes.selected_mode = 'sequencer'
 
         #self._user_modes = ModesComponent(name='User_Modes', is_enabled=False)
         #self._user_modes.add_mode('drums', [self._drum_modes])
         #self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
         #self._user_modes.selected_mode = 'drums'
 
-        return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
+        # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
+        return [self._step_sequencer, self._view_control, self._matrix_background]  # , self._mixer
 
-    def _user2_mode_layers(self):
+    # def _user2_mode_layers(self):
 
-        self._user_modes = ModesComponent(name='Instrument_Modes', is_enabled=False)
-        #self._user_modes.add_mode('drums', [self._drum_modes])
-        self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
-        self._user_modes.selected_mode = 'instrument'
+    #     self._user_modes = ModesComponent(name='Instrument_Modes', is_enabled=False)
+    #     #self._user_modes.add_mode('drums', [self._drum_modes])
+    #     self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
+    #     self._user_modes.selected_mode = 'instrument'
 
-        return [self._user_modes, self._view_control, self._matrix_background]  # , self._mixer
+    #     return [self._user_modes, self._view_control, self._matrix_background]  # , self._mixer
 
     def _init_note_repeat(self):
         self._note_repeat = NoteRepeatComponent(is_enabled=False,name='Note_Repeat')
@@ -689,23 +690,23 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
 
-    def _select_note_mode(self):
-        """
-        Selects which note mode to use depending on the kind of
-        current selected track and its device chain...
-        """
-        track = self.song().view.selected_track
-        drum_device = self._drum_group_finder.drum_group
-        self._step_sequencer.set_drum_group_device(drum_device)
-        self._drum_component.set_drum_group_device(drum_device)
-        if track == None or track.is_foldable or track in self.song().return_tracks or track == self.song().master_track or track.is_frozen:
-            self._user_modes.selected_mode = 'disabled'
-        elif track and track.has_audio_input:
-            self._user_modes.selected_mode = 'disabled'
-            #self._note_modes.selected_mode = 'looper'
-        elif drum_device:
-            self._user_modes.selected_mode = 'drums'
-        #else:
+    # def _select_note_mode(self):
+    #     """
+    #     Selects which note mode to use depending on the kind of
+    #     current selected track and its device chain...
+    #     """
+    #     track = self.song().view.selected_track
+    #     drum_device = self._drum_group_finder.drum_group
+    #     self._step_sequencer.set_drum_group_device(drum_device)
+    #     self._drum_component.set_drum_group_device(drum_device)
+    #     if track == None or track.is_foldable or track in self.song().return_tracks or track == self.song().master_track or track.is_frozen:
+    #         self._user_modes.selected_mode = 'disabled'
+    #     elif track and track.has_audio_input:
+    #         self._user_modes.selected_mode = 'disabled'
+    #         #self._note_modes.selected_mode = 'looper'
+    #     elif drum_device:
+    #         self._user_modes.selected_mode = 'drums'
+    #     #else:
         #    self._user_modes.selected_mode = 'instrument'
         #self.reset_controlled_track()
 
@@ -748,18 +749,23 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         #self.schedule_message(1, self.resetshift)
         self._matrix_background.set_enabled(True)
         self.schedule_message(1, self.disablebackground)
+        self.reset_controlled_track()
 
         if self._matrix_modes.selected_mode != 'disabled':
             if self._implicit_arm:
                 self._update_auto_arm(selected_mode=mode)
             self.reset_controlled_track()
+        self.reset_controlled_track()
+
+
 
     def _update_auto_arm(self, selected_mode=None):
         self._auto_arm.set_enabled(selected_mode or self._matrix_modes.selected_mode == 'user')
 
     @subject_slot('selected_mode')
     def _on_note_editor_layout_changed(self, mode):
-        pass
+        self.reset_controlled_track()
+        # pass
         #self.reset_controlled_track(mode)
 
 
