@@ -543,7 +543,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         mute_buttons = []
         scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
 
-        stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
+        # stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
 
 
         for track in range(8):
@@ -559,7 +559,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
         # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        # self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
         # self._sequencer.set_follow_button(self._master_select_button)
         # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
@@ -573,7 +573,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.mute_buttons = mute_buttons
         self.solo_buttons = solo_buttons
 
-        self.stop_buttons = stop_buttons
+        # self.stop_buttons = stop_buttons
 
         self.scene_launch_buttons = scene_launch_buttons
         self._scene_launch_buttons.resource_type = PrioritizedResource
@@ -626,8 +626,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
         self._matrix_modes.add_mode('sends', self._session_mode_layers())
         self._matrix_modes.add_mode('session', self._session_mode_layers())
-        self._matrix_modes.add_mode('user', self._user_mode_layers())
         self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+        self._matrix_modes.add_mode('user', self._user_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
         self._on_matrix_mode_changed.subject = self._matrix_modes

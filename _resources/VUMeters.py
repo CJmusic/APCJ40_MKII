@@ -21,7 +21,7 @@ LED_OFF = 0
 LED_ORANGE = 13
 
 # Scaling constants. Narrows the db range we display to 0db-21db or thereabouts
-CHANNEL_SCALE_MAX = 0.92
+CHANNEL_SCALE_MAX = 0.85
 CHANNEL_SCALE_MIN = 0.10#0.52
 CHANNEL_SCALE_INCREMENTS = 5
 
