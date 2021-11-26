@@ -130,7 +130,6 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._create_bank_toggle()
 
             self._create_actions()
-            self._create_vu()
 
 
             self._create_mixer() #the lights aren't working for the crossfader buttons
@@ -152,6 +151,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._create_session()
             self._session.set_mixer(self._mixer)
 
+            self._create_vu()
             self._create_vu_controls()
             self._create_matrix_modes()
 
@@ -575,11 +575,6 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.scene_launch_buttons = scene_launch_buttons
 
     def _create_vu(self):
-        def when_bank_on(button):
-            return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
 
         # self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
@@ -587,15 +582,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         # self._parent._scene_launch_buttons = self._scene_launch_buttons
         # self._parent._matrix = self._session_matrix
         self._button_rows = self._matrix_rows_raw
+        self._matrix_background.set_enabled(False)
+
         self._vu = VUMeters(self)
-        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix,track_bank_left_button=when_bank_off(self._left_button),
-                                                            track_bank_right_button=when_bank_off(self._right_button),
-                                                            scene_bank_up_button=when_bank_off(self._up_button),
-                                                            scene_bank_down_button=when_bank_off(self._down_button),
-                                                            page_left_button=when_bank_on(self._left_button),
-                                                            page_right_button=when_bank_on(self._right_button),
-                                                            page_up_button=when_bank_on(self._up_button),
-                                                            page_down_button=when_bank_on(self._down_button),)
+        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         self._vu.disconnect()
         self._vu.disable()
 
@@ -614,6 +604,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     
     def _update_vu_meters(self):
+        self._matrix_background.set_enabled(False)
+
         if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
         else:
@@ -772,10 +764,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
                 self._update_auto_arm(selected_mode=mode)
             self.reset_controlled_track()
 
-        # if self._matrix_modes.selected_mode == ''
 
         self.reset_controlled_track()
 
+        if self._matrix_modes.selected_mode == 'VU':
+            self._matrix_background.set_enabled(False)
 
 
     def _update_auto_arm(self, selected_mode=None):
