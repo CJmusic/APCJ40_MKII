@@ -48,6 +48,8 @@ class VUMeter():
     self.master = master
 
   def observe(self):
+
+
     new_frame = self.mean_peak() 
     self.store_frame(new_frame)
     if self.master and new_frame >= 0.92:
@@ -137,11 +139,23 @@ class VUMeters(ControlSurfaceComponent):
         self._connected = False
         self._session_offset = 0
         self._enabled = True
+          
+        for row_index in range(CLIP_GRID_Y):
+          row = self._parent._button_rows[row_index]
+          for button_index in range(CLIP_GRID_X):
+            button = row[button_index]
+            button.send_value(LED_OFF)
 
 
     def observe(self, session_offset):
 
-        
+        # sends OFF to all buttons before observing
+        for row_index in range(CLIP_GRID_Y):
+          row = self._parent._button_rows[row_index]
+          for button_index in range(CLIP_GRID_X):
+            button = row[button_index]
+            button.send_value(LED_OFF)
+
         self._session_offset = session_offset
         visible_tracks = []
 
@@ -216,17 +230,31 @@ class VUMeters(ControlSurfaceComponent):
 
     # Called when the Master clips. Makes the entire clip grid BRIGHT RED 
     def clip_warning(self, clipping):
-      for row_index in range(CLIP_GRID_Y):
-        row = self._parent._button_rows[row_index]
-        for button_index in range(CLIP_GRID_X):
-          button = row[button_index]
-          # Passing True to send_value forces it to happen even when the button in question is MIDI mapped
-          if clipping:
-            # button.send_value(LED_RED, True)
-            button.send_value(LED_RED)
-          else:
-            # button.send_value(LED_OFF, True)
-            button.send_value(LED_OFF)
+      # for row_index in range(CLIP_GRID_Y):
+      #   row = self._parent._button_rows[row_index]
+      for scene_index in range(CLIP_GRID_Y):
+        button = self._parent._scene_launch_buttons[scene_index]
+        if clipping:
+          button.send_value(LED_RED)
+        # else:
+        #   try:
+        #     button.send_value(LED_OFF) #added try/except for the setup phase
+        #   except: 
+        #     pass
+
+
+
+      # for row_index in range(CLIP_GRID_Y):
+      #   row = self._parent._button_rows[row_index]
+      #   for button_index in range(CLIP_GRID_X):
+      #     button = row[button_index]
+      #     # Passing True to send_value forces it to happen even when the button in question is MIDI mapped
+      #     if clipping:
+      #       # button.send_value(LED_RED, True)
+      #       button.send_value(LED_RED)
+      #     else:
+      #       # button.send_value(LED_OFF, True)
+      #       button.send_value(LED_OFF)
             # self._parent._stop_buttons[button_index].send_value(LED_OFF, True) #also zero the clip stop buttons when used as a reset
             # self._parent._stop_buttons[button_index].send_value(LED_OFF) #also zero the clip stop buttons when used as a reset# COMMENTED OUT CJ 2021-11-24
 

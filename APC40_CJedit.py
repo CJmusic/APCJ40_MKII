@@ -187,10 +187,17 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
         self._matrix_background.set_enabled(False)
-        self._encoder_mode.selected_mode = u'pan'
-        # self._matrix_modes.selected_mode = u'VU'
-        # self._matrix_modes.selected_mode = u'user'
-        self._matrix_modes.selected_mode = u'session'
+        self._encoder_mode.selected_mode = 'pan'
+        self._matrix_modes.selected_mode = 'disable'
+        self._matrix_modes.selected_mode = 'VU'
+        self._matrix_modes.selected_mode = 'user'
+        self._matrix_modes.selected_mode = 'session'
+
+        self._matrix_modes.subject = self._step_sequencer
+        self._matrix_modes.subject = self._vu
+        self._matrix_modes.subject = self._session
+
+
 
     def _with_shift(self, button):
         return ComboElement(button, modifiers=[self._shift_button])
@@ -439,6 +446,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _create_step_sequencer(self):
         self._matrix_background.set_enabled(False)
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
+        self._step_sequencer._nav_up_button = self._up_button
+        self._step_sequencer._nav_down_button = self._down_button
+        self._step_sequencer._nav_left_button = self._left_button
+        self._step_sequencer._nav_right_button = self._right_button
+
         self._step_sequencer.layer = self._create_step_sequencer_layer()
         self._step_sequencer.set_next_loop_page_button = self._right_button
         self._step_sequencer.set_prev_loop_page_button = self._left_button
@@ -467,7 +479,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
             #select_button=self._user_button,
             delete_button=self._stop_all_button,
-            playhead=self._playhead,
+            # playhead=self._playhead,
             quantization_buttons=self._stop_buttons,
             shift_button=self._shift_button,
             # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
@@ -527,17 +539,17 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
 
-    def _create_instrument_layer(self):
-        return Layer(
-            playhead=self._playhead,
-            velocity_slider=self._velocity_slider,
-            # mute_button=self._global_mute_button,
-            quantization_buttons=self._stop_buttons,
-            loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
-            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
-            #note_editor_matrices=ButtonMatrixElement(
-            #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
-            note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
+    # def _create_instrument_layer(self):
+    #     return Layer(
+    #         playhead=self._playhead,
+    #         velocity_slider=self._velocity_slider,
+    #         # mute_button=self._global_mute_button,
+    #         quantization_buttons=self._stop_buttons,
+    #         loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
+    #         short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
+    #         #note_editor_matrices=ButtonMatrixElement(
+    #         #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
+    #         note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
 
 
     # def enter_note_mode_layout(self):
@@ -640,7 +652,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
                                                             page_down_button=when_bank_on(self._down_button)))
 
     def _create_vu(self):
+        def when_bank_on(button):
+                    return self._bank_toggle.create_toggle_element(on_control=button)
 
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
         # self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
         # self._parent._track_stop_buttons = self._stop_buttons 
