@@ -163,7 +163,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
+        self._matrix_background.set_enabled(False)
         self._matrix_modes.selected_mode = u'session'
+        self._encoder_mode.selected_mode = u'pan'
 
     def _with_shift(self, button):
         return ComboElement(button, modifiers=[self._shift_button])
@@ -175,7 +177,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             button = make_button(skin=self._color_skin, *a, **k)
             button.is_rgb = True
             button.num_delayed_messages = 2
-            return button
+            return button 
 
         def make_matrix_button(track, scene):
             return make_color_button(0, 32 + track - NUM_TRACKS * scene, name='%d_Clip_%d_Button' % (track, scene))
@@ -630,10 +632,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
         self._matrix_modes.default_behaviour = ImmediateBehaviour()
         self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         self._matrix_modes.add_mode('sends', self._session_mode_layers())
         self._matrix_modes.add_mode('session', self._session_mode_layers())
         self._matrix_modes.add_mode('user', self._user_mode_layers())
-        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
         self._on_matrix_mode_changed.subject = self._matrix_modes
@@ -662,6 +664,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _user_mode_layers(self): 
         self._drum_group_finder = DrumGroupFinderComponent()
         self._on_drum_group_changed.subject = self._drum_group_finder
+        self._session.set_enabled(False)
+        self.reset_controlled_track()
 
         # self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
         # self._drum_modes.add_mode('sequencer', self._step_sequencer)
@@ -741,8 +745,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         #self._shift_button.receive_value(127)
         # #self.schedule_message(1, self.resetshift)
         self._matrix_background.set_enabled(True)
-        self.schedule_message(1, self.disablebackground)
+        # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
+        self._matrix_background.set_enabled(False)
+
         # if self._matrix_modes.selected_mode != 'session':
         #     pass
             #self._select_note_mode()
@@ -765,8 +771,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._vu.disconnect()
         self._vu.disable() 
 
-        # self._matrix_background.set_enabled(True)
-        # self.schedule_message(1, self.disablebackground)
+        self._matrix_background.set_enabled(True)
+        self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
 
         if self._matrix_modes.selected_mode != 'disabled':
@@ -775,7 +781,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self.reset_controlled_track()
 
 
-        self.reset_controlled_track()
+        # self.reset_controlled_track()
 
         if self._matrix_modes.selected_mode == 'VU':
             self._matrix_background.set_enabled(False)
