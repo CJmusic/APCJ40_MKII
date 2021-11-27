@@ -164,8 +164,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
         self._matrix_background.set_enabled(False)
-        self._matrix_modes.selected_mode = u'session'
         self._encoder_mode.selected_mode = u'pan'
+        self._matrix_modes.selected_mode = u'session'
 
     def _with_shift(self, button):
         return ComboElement(button, modifiers=[self._shift_button])
@@ -552,6 +552,12 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
 
         # stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
+        is_momentary = True
+        self.shift_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 98)
+        self.right_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 96)
+        self.left_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 97)
+        self.up_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 94)
+        self.down_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 95)
 
 
         for track in range(8):
@@ -567,7 +573,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
         # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        self._sequencer.set_nav_buttons(self._up_button, self._down_button, self._left_button, self._right_button)
+        self._sequencer.set_nav_buttons(self.up_button, self.down_button, self.left_button, self.right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
         # self._sequencer.set_follow_button(self._master_select_button)
         # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
@@ -605,13 +611,13 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
-            if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
-                if value != 0:
-                    self._vu.disconnect()
-                    self._vu.disable()
-                else:
-                    self._update_vu_meters()
-                    self._vu.enable()
+        if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
+            if value != 0:
+                self._vu.disconnect()
+                self._vu.disable()
+            else:
+                self._update_vu_meters()
+                self._vu.enable()
 
 
     
@@ -632,9 +638,9 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
         self._matrix_modes.default_behaviour = ImmediateBehaviour()
         self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         self._matrix_modes.add_mode('sends', self._session_mode_layers())
         self._matrix_modes.add_mode('session', self._session_mode_layers())
+        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         self._matrix_modes.add_mode('user', self._user_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
@@ -774,14 +780,15 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_background.set_enabled(True)
         self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
+        self._update_auto_arm(selected_mode=mode)
 
-        if self._matrix_modes.selected_mode != 'disabled':
-            if self._implicit_arm:
-                self._update_auto_arm(selected_mode=mode)
-            self.reset_controlled_track()
+        # if self._matrix_modes.selected_mode != 'disabled':
+        #     if self._implicit_arm:
+        #         self._update_auto_arm(selected_mode=mode)
+        #     self.reset_controlled_track()
 
 
-        # self.reset_controlled_track()
+        self.reset_controlled_track()
 
         if self._matrix_modes.selected_mode == 'VU':
             self._matrix_background.set_enabled(False)
@@ -790,11 +797,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _update_auto_arm(self, selected_mode=None):
         self._auto_arm.set_enabled(selected_mode or self._matrix_modes.selected_mode == 'user')
 
-    @subject_slot('selected_mode')
-    def _on_note_editor_layout_changed(self, mode):
-        self.reset_controlled_track()
-        # pass
-        #self.reset_controlled_track(mode)
+    # @subject_slot('selected_mode')
+    # def _on_note_editor_layout_changed(self, mode):
+    #     self.reset_controlled_track()
+    #     # pass
+    #    # self.reset_controlled_track(mode)
 
 
     def reset_controlled_track(self, mode=None):
@@ -828,8 +835,10 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         return 41
 
     def disconnect(self):
+        self._matrix_modes.selected_mode = 'disabled'
         self._background.set_enabled(False)
-        ControlSurface.disconnect(self)
+        self._background.set_enabled(False)
+        control_surface.disconnect(self)
         return None
 
 
