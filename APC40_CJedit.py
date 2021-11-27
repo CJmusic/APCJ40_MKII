@@ -553,11 +553,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
         # stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
         is_momentary = True
-        self.shift_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 98)
-        self.right_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 96)
-        self.left_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 97)
-        self.up_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 94)
-        self.down_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 95)
+        # self.shift_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 98)
+        # self.right_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 96)
+        # self.left_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 97)
+        # self.up_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 94)
+        # self.down_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 95)
 
 
         for track in range(8):
@@ -573,7 +573,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             arm_buttons[-1].name = str(track) + '_Arm_Button'
 
         # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        self._sequencer.set_nav_buttons(self.up_button, self.down_button, self.left_button, self.right_button)
+        # self._sequencer.set_nav_buttons(self.up_button, self.down_button, self.left_button, self.right_button)
         self._sequencer.set_button_matrix(self._session_matrix)
         # self._sequencer.set_follow_button(self._master_select_button)
         # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
