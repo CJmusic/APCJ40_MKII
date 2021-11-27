@@ -110,6 +110,29 @@ from ._resources.ConfigurableButtonElement import ConfigurableButtonElement
 from ._resources.VUMeters import VUMeters
 
 
+
+#~~~~~~~~~~ CURRENT BUGS ~~~~~~~~~~~~~~
+
+# ```
+#  - Wont start in pan/session mode 
+# looks like the background is enabled
+
+#  - wont switch to user mode cleanly 
+# needs to switch to VU mode first then it goes smooth
+# seems that VU mode is related to user mode somehow 
+
+#  - scene launch buttons are always coloured 
+#  - playhead isnt working 
+#  - loop selector isnt working 
+
+# It looks like 
+
+#  - navigation buttons in vu mode not working
+#  - buttons lit on disconnect
+#  - somethings weird with the stop buttons
+# ```
+
+
 class APC40_CJedit(APC, OptimizedControlSurface):
 
     def __init__(self, *a, **k):
@@ -165,6 +188,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self.set_device_component(self._device)
         self._matrix_background.set_enabled(False)
         self._encoder_mode.selected_mode = u'pan'
+        # self._matrix_modes.selected_mode = u'VU'
+        # self._matrix_modes.selected_mode = u'user'
         self._matrix_modes.selected_mode = u'session'
 
     def _with_shift(self, button):
@@ -407,10 +432,12 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_background.layer = Layer(matrix=self._session_matrix)
 
         self._mod_background = ModifierBackgroundComponent(is_root=True)
+        # self._mod_background.set_enabled(False)
         self._mod_background.layer = Layer(shift_button=self._shift_button)
 
 
     def _create_step_sequencer(self):
+        self._matrix_background.set_enabled(False)
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
         self._step_sequencer.layer = self._create_step_sequencer_layer()
         self._step_sequencer.set_next_loop_page_button = self._right_button
@@ -426,6 +453,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer_layer(self):
+
         return Layer(
             velocity_slider=self._velocity_slider,
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
@@ -543,7 +571,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_vu_controls(self):
-        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
+        # self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
+        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._double_press_matrix.submatrix[0:8, 0]))
         is_momentary = True
         select_buttons = []
         arm_buttons = []
@@ -591,6 +620,24 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
         self.scene_launch_buttons = scene_launch_buttons
         self._scene_launch_buttons.resource_type = PrioritizedResource
+
+        
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
+        self._vu_session_nav = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+                                                enable_skinning=True,
+                                                layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
+                                                            track_bank_right_button=when_bank_off(self._right_button),
+                                                            scene_bank_up_button=when_bank_off(self._up_button),
+                                                            scene_bank_down_button=when_bank_off(self._down_button),
+                                                            page_left_button=when_bank_on(self._left_button),
+                                                            page_right_button=when_bank_on(self._right_button),
+                                                            page_up_button=when_bank_on(self._up_button),
+                                                            page_down_button=when_bank_on(self._down_button)))
 
     def _create_vu(self):
 
@@ -834,12 +881,11 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     def _product_model_id_byte(self):
         return 41
 
-    def disconnect(self):
-        self._matrix_modes.selected_mode = 'disabled'
-        self._background.set_enabled(False)
-        self._background.set_enabled(False)
-        control_surface.disconnect(self)
-        return None
+    # def disconnect(self):
+    #     self._matrix_modes.selected_mode = 'disabled'
+    #     self._background.set_enabled(False)
+    #     control_surface.disconnect(self)
+        # return None
 
 
     @contextmanager

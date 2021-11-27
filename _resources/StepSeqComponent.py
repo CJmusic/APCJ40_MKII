@@ -125,8 +125,8 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
         if matrix:
             # for button, _ in filter(first, matrix.iterbuttons()):
             for button, _ in filter(first, matrix.iterbuttons()):
-                # button.set_channel(NON_FEEDBACK_CHANNEL)
-                button.set_channel(PLAYHEAD_FEEDBACK_CHANNEL)
+                button.set_channel(NON_FEEDBACK_CHANNEL)
+                # button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS)
         self._update_note_editor_matrix()
         self._note_editor.set_enabled(True)
         self._big_loop_selector.set_loop_selector_matrix(self._note_editor_matrix)
@@ -138,8 +138,8 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
         self._loop_selector.set_loop_selector_matrix(matrix)
         if matrix:
             for button, _ in filter(first, matrix.iterbuttons()):
-                # button.set_channel(NON_FEEDBACK_CHANNEL)
-                button.set_channel(PLAYHEAD_FEEDBACK_CHANNEL) # Changed to test CJ 2021-11-26
+                button.set_channel(NON_FEEDBACK_CHANNEL)
+                # button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS) # Changed to test CJ 2021-11-26
 
 
     def selected_track(self):
