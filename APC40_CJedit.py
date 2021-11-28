@@ -96,7 +96,7 @@ NUM_SCENES = 5
 
 
 from _Framework.Control import ButtonControl
-from _Framework.ButtonElement import ButtonElement
+from _Framework.ButtonElement import ButtonElement, ButtonValue
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 from _Framework.SubjectSlot import subject_slot
 
@@ -178,24 +178,15 @@ class APC40_CJedit(APC, OptimizedControlSurface):
             self._create_vu_controls()
             self._create_matrix_modes()
 
-            # self._init_matrix_modes()
             self._create_device()
 
-            # self._create_undo_redo #isn't working
             self.set_feedback_channels(FEEDBACK_CHANNELS)
 
+        ON_VALUE = ButtonValue(127)
+        self._pan_button.send_value(ON_VALUE)
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
-        self._matrix_background.set_enabled(False)
-        self._encoder_mode.selected_mode = 'pan'
-        self._matrix_modes.selected_mode = 'disable'
-        self._matrix_modes.selected_mode = 'VU'
-        self._matrix_modes.selected_mode = 'user'
-        self._matrix_modes.selected_mode = 'session'
-
-        self._matrix_modes.subject = self._step_sequencer
-        self._matrix_modes.subject = self._vu
-        self._matrix_modes.subject = self._session
+ 
 
 
 
@@ -439,7 +430,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
         self._matrix_background.layer = Layer(matrix=self._session_matrix)
 
         self._mod_background = ModifierBackgroundComponent(is_root=True)
-        # self._mod_background.set_enabled(False)
+        self._mod_background.set_enabled(False)
         self._mod_background.layer = Layer(shift_button=self._shift_button)
 
 
@@ -465,7 +456,6 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer_layer(self):
-
         return Layer(
             velocity_slider=self._velocity_slider,
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
@@ -583,8 +573,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
 
     def _create_vu_controls(self):
-        # self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
-        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._double_press_matrix.submatrix[0:8, 0]))
+        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
+        # self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._double_press_matrix.submatrix[0:8, 0]))
         is_momentary = True
         select_buttons = []
         arm_buttons = []
