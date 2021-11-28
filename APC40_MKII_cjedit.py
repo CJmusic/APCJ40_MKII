@@ -133,10 +133,10 @@ from ._resources.VUMeters import VUMeters
 # ```
 
 
-class APC40_CJedit(APC, OptimizedControlSurface):
+class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
     def __init__(self, *a, **k):
-        super(APC40_CJedit, self).__init__(*a, **k)
+        super(APC40_MKII_cjedit, self).__init__(*a, **k)
         self._color_skin = make_rgb_skin()
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()
@@ -182,8 +182,8 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
             self.set_feedback_channels(FEEDBACK_CHANNELS)
 
-        ON_VALUE = ButtonValue(127)
-        self._pan_button.send_value(ON_VALUE)
+        # ON_VALUE = ButtonValue(127)
+        # self._pan_button.send_value(ON_VALUE)
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
  
@@ -436,15 +436,16 @@ class APC40_CJedit(APC, OptimizedControlSurface):
 
     def _create_step_sequencer(self):
         self._matrix_background.set_enabled(False)
-        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
-        self._step_sequencer._nav_up_button = self._up_button
-        self._step_sequencer._nav_down_button = self._down_button
-        self._step_sequencer._nav_left_button = self._left_button
-        self._step_sequencer._nav_right_button = self._right_button
+        # self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)#, playhead = self._playhead)
+        # self._step_sequencer._nav_up_button = self._up_button
+        # self._step_sequencer._nav_down_button = self._down_button
+        # self._step_sequencer._nav_left_button = self._left_button
+        # self._step_sequencer._nav_right_button = self._right_button
 
         self._step_sequencer.layer = self._create_step_sequencer_layer()
-        self._step_sequencer.set_next_loop_page_button = self._right_button
-        self._step_sequencer.set_prev_loop_page_button = self._left_button
+        # self._step_sequencer.set_next_loop_page_button = self._right_button
+        # self._step_sequencer.set_prev_loop_page_button = self._left_button
 
 
         # self._drum_velocity_levels = VelocityLevelsComponent(target_note_provider=self._drum_component, skin_base_key=self.drum_group_velocity_levels_skin, is_enabled=False, layer=Layer(velocity_levels=u'velocity_levels_element', select_button=u'select_button'))
@@ -897,7 +898,7 @@ class APC40_CJedit(APC, OptimizedControlSurface):
     @contextmanager
     def component_guard(self):
         """ Customized to inject additional things """
-        with super(APC40_CJedit, self).component_guard():
+        with super(APC40_MKII_cjedit, self).component_guard():
 
             with self.make_injector().everywhere():
                 yield

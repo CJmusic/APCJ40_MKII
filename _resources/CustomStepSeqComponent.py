@@ -7,7 +7,6 @@ from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot, Subject, subject_slot_group
 from _Framework.Util import forward_property, find_if
 from .NoteEditorComponent import NoteEditorComponent
-
 from .LoopSelectorComponent import LoopSelectorComponent
 from .PlayheadComponent import PlayheadComponent
 from .NoteEditorPaginator import NoteEditorPaginator
@@ -129,7 +128,7 @@ class StepSeqComponent(CompoundComponent):
 
     #  del_button = ButtonControl()
 
-    def __init__(self, clip_creator=None, skin=None, grid_resolution=None, playhead = None, note_editor_settings=None, *a, **k):
+    def __init__(self, clip_creator=None, skin=None, grid_resolution=None, note_editor_settings=None, *a, **k):
         super(StepSeqComponent, self).__init__(*a, **k)
         if not clip_creator:
             raise AssertionError
@@ -149,7 +148,7 @@ class StepSeqComponent(CompoundComponent):
         note_editor_settings and self.register_component(note_editor_settings)
         self._note_editor, self._loop_selector, self._big_loop_selector, self._drum_group = self.register_components(
             APCNoteEditorComponent(settings_mode=note_editor_settings, clip_creator=clip_creator,
-                                  grid_resolution=self._grid_resolution),
+                                grid_resolution=self._grid_resolution),
             LoopSelectorComponent(clip_creator=clip_creator),
             LoopSelectorComponent(clip_creator=clip_creator, measure_length=0.25),  # must match loop selector
             DrumGroupComponent()
@@ -178,7 +177,6 @@ class StepSeqComponent(CompoundComponent):
         self._on_detail_clip_changed.subject = self.song().view
         self._detail_clip = None
         self._playhead = None
-        # self._playhead = playhead
         self._playhead_component = self.register_component(PlayheadComponent(
             grid_resolution=grid_resolution,
             paginator=self._paginator,
@@ -218,11 +216,11 @@ class StepSeqComponent(CompoundComponent):
         return self._grid_resolution.clip_grid[1]
 
     def _update_playhead_color(self):
-        if self.is_enabled() and self._skin and self._playhead: 
-        # if self._skin and self._playhead: 
-            # pass
+        if self.is_enabled() and self._skin and self._playhead:
+            pass
         #    self._playhead.velocity = to_midi_value(self._skin[self._playhead_color])  # switched 10/17
-           self._playhead.velocity = int(self._skin[self._playhead_color])
+
+        #    self._playhead.velocity = int(self._skin[self._playhead_color])
 
     def set_drum_group_device(self, drum_group_device):
         if not (not drum_group_device or drum_group_device.can_have_drum_pads):

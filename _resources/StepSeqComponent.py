@@ -1,6 +1,6 @@
 import Live
 
-from itertools import chain, starmap#, #filter
+from itertools import  chain, starmap
 from _Framework.Util import first
 from _Framework.ClipCreator import ClipCreator
 from _Framework.SubjectSlot import subject_slot, subject_slot_group
@@ -14,7 +14,7 @@ from .NoteSettings import NoteEditorSettingsComponent
 from .APCMessenger import APCMessenger
 #from .APCNoteEditorComponent import APCNoteEditorComponent
 
-# from .LoopSelectorComponent import LoopSelectorComponent
+from .LoopSelectorComponent import LoopSelectorComponent
 
 # from functools import partial
 # from _Framework import Task
@@ -22,14 +22,10 @@ from .APCMessenger import APCMessenger
 from _Framework.Control import ButtonControl
 
 
-from .APCDrumGroupComponent import APCDrumGroupComponent
-from .APCNoteEditorComponent import APCNoteEditorComponent
-
-
 class StepSeqComponent(StepSeqComponent, APCMessenger):
     """ Step sequencer for APC40 MkII """
 
-    # next_page_button = ButtonControl()  # lewq
+    next_page_button = ButtonControl()  # lew
 
     def __init__(self, *a, **k):
         super(StepSeqComponent, self).__init__(
@@ -40,8 +36,8 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
             *a, **k)
 
         #    self._grid_resolution = grid_resolution      # added 10/17
-        self._drum_group.__class__ = APCDrumGroupComponent
-        self._note_editor.__class__ = APCNoteEditorComponent
+        #self._drum_group.__class__ = APCDrumGroupComponent
+        #self._note_editor.__class__ = APCNoteEditorComponent
         self._setup_drum_group_finder()
         self._configure_playhead()
 
@@ -70,7 +66,6 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
     def set_velocity_slider(self, button_slider):
         self._note_editor.set_velocity_slider(button_slider)
 
-
     def _configure_playhead(self):
         self._playhead_component._notes = tuple(chain(*starmap(range, (
             (28, 32),
@@ -81,30 +76,7 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
             (28, 31),
             (20, 23),
             (12, 15),
-            (4, 7)))))        # self._playhead_component._notes = tuple(chain(*starmap(range, (
-        #     (92, 100),
-        #     (84, 92),
-        #     (76, 84),
-        #     (68, 76))))) 
-        # self._playhead_component._triplet_notes = tuple(chain(*starmap(range, (
-        #     (92, 98),
-        #     (84, 90),
-        #     (76, 82),
-        #     (68, 74)))))
-            # notes=chain(*starmap(
-            #     range, (
-            #         (92, 100),
-            #         (84, 92),
-            #         (76, 84),
-            #         (68, 76)
-            #     ))),
-            # triplet_notes=chain(*starmap(
-            #     range, (
-            #         (92, 98),
-            #         (84, 90),
-            #         (76, 82),
-            #         (68, 74)
-            #     ))), feedback_channels=[PLAYHEAD_FEEDBACK_CHANNELS]))
+            (4, 7)))))
 
     def _setup_drum_group_finder(self):
         self._drum_group_finder = DrumGroupFinderComponent()
@@ -123,24 +95,18 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
         This component is enabled """
         self._note_editor_matrix = matrix
         if matrix:
-            # for button, _ in filter(first, matrix.iterbuttons()):
             for button, _ in filter(first, matrix.iterbuttons()):
                 button.set_channel(NON_FEEDBACK_CHANNEL)
-                # button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS)
         self._update_note_editor_matrix()
         self._note_editor.set_enabled(True)
         self._big_loop_selector.set_loop_selector_matrix(self._note_editor_matrix)
         self._note_editor.set_button_matrix(self._note_editor_matrix)
-
-
 
     def set_loop_selector_matrix(self, matrix):
         self._loop_selector.set_loop_selector_matrix(matrix)
         if matrix:
             for button, _ in filter(first, matrix.iterbuttons()):
                 button.set_channel(NON_FEEDBACK_CHANNEL)
-                # button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS) # Changed to test CJ 2021-11-26
-
 
     def selected_track(self):
         song = Live.Application.get_application().get_document()
