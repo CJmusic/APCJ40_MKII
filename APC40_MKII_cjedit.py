@@ -175,7 +175,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
             self._create_vu()
-            self._create_vu_controls()
             self._create_matrix_modes()
 
             self._create_device()
@@ -571,77 +570,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     #     self.reset_controlled_track()
 
 
-
-
-    def _create_vu_controls(self):
-        self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._stop_buttons))
-        # self._sequencer = StepSequencerComponent(self, self._session, self._session_matrix, tuple(self._double_press_matrix.submatrix[0:8, 0]))
-        is_momentary = True
-        select_buttons = []
-        arm_buttons = []
-        solo_buttons = []
-        mute_buttons = []
-        scene_launch_buttons = [ ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, index + 82) for index in range(NUM_SCENES) ]
-
-        # stop_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, index, 52) for index in range(NUM_TRACKS) ]
-        is_momentary = True
-        # self.shift_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 98)
-        # self.right_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 96)
-        # self.left_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 97)
-        # self.up_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 94)
-        # self.down_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, 95)
-
-
-        for track in range(8):
-            solo_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 49)
-            solo_buttons.append(solo_button)
-            mute_button = ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 50)
-            mute_buttons.append(mute_button)
-            solo_button.name = str(track) + '_Solo_Button'
-            mute_button.name = str(track) + '_Mute_Button'
-            select_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 51))
-            select_buttons[-1].name = str(track) + '_Select_Button'          
-            arm_buttons.append(ButtonElement(is_momentary, MIDI_NOTE_TYPE, track, 48))
-            arm_buttons[-1].name = str(track) + '_Arm_Button'
-
-        # self._sequencer.set_bank_buttons(tuple(select_buttons))
-        # self._sequencer.set_nav_buttons(self.up_button, self.down_button, self.left_button, self.right_button)
-        self._sequencer.set_button_matrix(self._session_matrix)
-        # self._sequencer.set_follow_button(self._master_select_button)
-        # self._sequencer.set_velocity_buttons(tuple(arm_buttons))
-        self._sequencer.set_shift_button(self._shift_button)
-        # self._sequencer.set_lane_mute_buttons(tuple(scene_launch_buttons))
-        # self._sequencer.set_loop_start_buttons(tuple(mute_buttons))
-        # self._sequencer.set_loop_length_buttons(tuple(solo_buttons))
-
-        self.select_buttons = select_buttons
-        self.arm_buttons = arm_buttons
-        self.mute_buttons = mute_buttons
-        self.solo_buttons = solo_buttons
-
-        # self.stop_buttons = stop_buttons
-
-        self.scene_launch_buttons = scene_launch_buttons
-        self._scene_launch_buttons.resource_type = PrioritizedResource
-
-        
-        def when_bank_on(button):
-            return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
-
-        self._vu_session_nav = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
-                                                enable_skinning=True,
-                                                layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
-                                                            track_bank_right_button=when_bank_off(self._right_button),
-                                                            scene_bank_up_button=when_bank_off(self._up_button),
-                                                            scene_bank_down_button=when_bank_off(self._down_button),
-                                                            page_left_button=when_bank_on(self._left_button),
-                                                            page_right_button=when_bank_on(self._right_button),
-                                                            page_up_button=when_bank_on(self._up_button),
-                                                            page_down_button=when_bank_on(self._down_button)))
-
     def _create_vu(self):
         def when_bank_on(button):
                     return self._bank_toggle.create_toggle_element(on_control=button)
@@ -717,7 +645,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._session_zoom.update()
 
         self._update_vu_meters()
-        return [self._sequencer, self._view_control, self._session_zoom]
+        return [self._vu, self._view_control, self._session_zoom]
 
 
 
