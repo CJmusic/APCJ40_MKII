@@ -63,17 +63,17 @@ class VUMeter():
         self.parent._clipping = False
         self.parent.clip_warning(False)
 
-      if not self.parent._clipping:
-        if USE_RMS:
-          level = self.scale(self.rms(self.frames))
+      # if not self.parent._clipping: #removed CJ 2021-11-29
+      if USE_RMS:
+        level = self.scale(self.rms(self.frames))
+      else:
+        level = self.scale(new_frame)
+      if level != self.current_level:
+        self.current_level = level
+        if self.master:
+          self.parent.set_master_leds(level)
         else:
-          level = self.scale(new_frame)
-        if level != self.current_level:
-          self.current_level = level
-          if self.master:
-            self.parent.set_master_leds(level)
-          else:
-            self.parent.set_leds(self.matrix, level) 
+          self.parent.set_leds(self.matrix, level) 
 
   def store_frame(self, frame):
     self.frames.pop(0)
