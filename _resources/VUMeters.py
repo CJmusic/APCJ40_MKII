@@ -23,7 +23,7 @@ LED_ORANGE = 13
 # Scaling constants. Narrows the db range we display to 0db-21db or thereabouts
 CHANNEL_SCALE_MAX = 0.92
 CHANNEL_SCALE_MIN = 0.52
-CHANNEL_SCALE_INCREMENTS = 6
+CHANNEL_SCALE_INCREMENTS = 5
 
 MASTER_SCALE_MAX = 0.92
 MASTER_SCALE_MIN = 0.52
@@ -117,6 +117,7 @@ class VUMeter():
           strip = self.parent._parent._mixer.channel_strip(column_index)
           # column.append(self.parent._parent._stop_buttons[column_index])# commented out CJ 2021-11-30
           column.extend([strip._select_button, strip._mute_button, strip._solo_button, strip._arm_button])
+          # column.extend([strip._stop_button, strip._select_button, strip._mute_button, strip._solo_button, strip._arm_button])
     return matrix
 
 
@@ -286,9 +287,9 @@ class VUMeters(ControlSurfaceComponent):
     # Top two LEDs are red, the next is orange
     def set_leds(self, matrix, level):
         for column in matrix:
-          for index in range(6):
+          for index in range(CHANNEL_SCALE_INCREMENTS):
             button = column[index] 
-            if index >= (6 - level): 
+            if index >= (CHANNEL_SCALE_INCREMENTS - level): 
               if index < 1:
                 # button.send_value(LED_RED, True)
                 button.send_value(LED_RED)

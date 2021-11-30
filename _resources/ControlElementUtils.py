@@ -6,8 +6,8 @@ from _Framework.SliderElement import SliderElement
 from .ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE
 
-#from .RingedEncoderElement import RingedEncoderElement
-from _APC.RingedEncoderElement import RingedEncoderElement
+from .RingedEncoderElement import RingedEncoderElement
+# from _APC.RingedEncoderElement import RingedEncoderElement
 from .ColorButtonElement import ColorButtonElement
 from .CustomSkinDefault import make_rgb_skin
 

@@ -484,7 +484,9 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
             #select_button=self._user_button,
             delete_button=self._stop_all_button,
-            # playhead=self._playhead,
+
+            playhead=self._playhead,
+
             quantization_buttons=self._stop_buttons,
             shift_button=self._shift_button,
             # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
@@ -597,7 +599,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._matrix_background.set_enabled(False)
         self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
-        # self._parent._track_stop_buttons = self._stop_buttons 
+        self._parent._track_stop_buttons = self._stop_buttons 
         # self._parent._scene_launch_buttons = self._scene_launch_buttons
         # self._parent._matrix = self._session_matrix
 
@@ -605,7 +607,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._vu = VUMeters(self)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        self._vu.layer = Layer( _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        self._vu.layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         self._vu.disconnect()
         self._vu.disable()
 

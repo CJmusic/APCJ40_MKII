@@ -177,7 +177,7 @@ class StepSeqComponent(CompoundComponent):
         self._on_detail_clip_changed.subject = self.song().view
         self._detail_clip = None
         self._playhead = None
-        self._playhead_component = self.register_component(PlayheadComponent(
+        self._playhead_component = self.register_component(PlayheadComponent(  ### THESE ARE DIFFERENT FROM StepSeqComponent.py
             grid_resolution=grid_resolution,
             paginator=self._paginator,
             follower=self._loop_selector,
@@ -215,7 +215,7 @@ class StepSeqComponent(CompoundComponent):
     def _is_triplet_quantization(self):
         return self._grid_resolution.clip_grid[1]
 
-    def _update_playhead_color(self):
+    def _update_playhead_color(self): 
         if self.is_enabled() and self._skin and self._playhead:
             pass
         #    self._playhead.velocity = to_midi_value(self._skin[self._playhead_color])  # switched 10/17
