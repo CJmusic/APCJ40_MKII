@@ -207,9 +207,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
     @subject_slot('playing_position')
     def _on_playing_position_changed(self):
-        #self._update_page_and_playhead_leds()
-        #self._update_page_selection()
-        self.notify_playing_position()
+        # self._update_page_and_playhead_leds()
+        # self._update_page_selection()
+        self.notify_playing_position() # Changed back CJ 2021-11-29
 
     @subject_slot('playing_status')
     def _on_playing_status_changed(self):

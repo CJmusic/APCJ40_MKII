@@ -175,6 +175,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             self._session.set_mixer(self._mixer)
 
             self._create_vu()
+            self._create_session()
+
             self._create_matrix_modes()
 
             self._create_device()

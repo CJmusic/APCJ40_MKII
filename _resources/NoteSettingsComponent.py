@@ -300,7 +300,7 @@ class NoteEditorSettingsComponent(ModesComponent):
 
     def set_initial_encoders(self, encoders):
         self._initial_encoders = encoders
-        self._on_init_encoder_touch.replace_subjects(encoders or [])
+        self._on_init_encoder_touch.replace_subjects(encoders or []) #this line is throwing an error CJ 2021-11-29
         self._on_init_encoder_value.replace_subjects(encoders or [])
         self._try_immediate_show_settings()
 
