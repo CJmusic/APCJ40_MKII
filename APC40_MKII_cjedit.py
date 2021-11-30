@@ -171,11 +171,11 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             # self._init_note_repeat() #this is always on the toggle isn't working
             # self._init_VUMeters()
 
-            self._create_session()
-            self._session.set_mixer(self._mixer)
+            # self._create_session()
 
             self._create_vu()
             self._create_session() # runs this twice to start in session mode, need to fix this 
+            self._session.set_mixer(self._mixer)
 
             self._create_matrix_modes()
 
@@ -361,9 +361,22 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         def when_bank_off(button):
             return self._bank_toggle.create_toggle_element(off_control=button)
 
-        self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
-                                                enable_skinning=True,
-                                                layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
+        # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+        #                                         enable_skinning=True,
+        #                                         layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
+        #                                                     track_bank_right_button=when_bank_off(self._right_button),
+        #                                                     scene_bank_up_button=when_bank_off(self._up_button),
+        #                                                     scene_bank_down_button=when_bank_off(self._down_button),
+        #                                                     page_left_button=when_bank_on(self._left_button),
+        #                                                     page_right_button=when_bank_on(self._right_button),
+        #                                                     page_up_button=when_bank_on(self._up_button),
+        #                                                     page_down_button=when_bank_on(self._down_button),
+        #                                                     stop_track_clip_buttons=self._stop_buttons,
+        #                                                     stop_all_clips_button=self._stop_all_button,
+        #                                                     scene_launch_buttons=self._scene_launch_buttons,
+                                                            # clip_launch_buttons=self._session_matrix))
+
+        self._session.layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
                                                             track_bank_right_button=when_bank_off(self._right_button),
                                                             scene_bank_up_button=when_bank_off(self._up_button),
                                                             scene_bank_down_button=when_bank_off(self._down_button),
@@ -374,7 +387,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
                                                             stop_track_clip_buttons=self._stop_buttons,
                                                             stop_all_clips_button=self._stop_all_button,
                                                             scene_launch_buttons=self._scene_launch_buttons,
-                                                            clip_launch_buttons=self._session_matrix))
+                                                            clip_launch_buttons=self._session_matrix)
 
         clip_color_table = Colors.LIVE_COLORS_TO_MIDI_VALUES.copy()
         clip_color_table[16777215] = 119
@@ -578,32 +591,20 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
         def when_bank_off(button):
             return self._bank_toggle.create_toggle_element(off_control=button)
+        self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+                                                enable_skinning=True)
+        self._button_rows = self._matrix_rows_raw
+        self._matrix_background.set_enabled(False)
         self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
         # self._parent._track_stop_buttons = self._stop_buttons 
         # self._parent._scene_launch_buttons = self._scene_launch_buttons
         # self._parent._matrix = self._session_matrix
-        # self._vu_session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
-        #                                         enable_skinning=True)
-        # self._vu_session.layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
-        #                                                     track_bank_right_button=when_bank_off(self._right_button),
-        #                                                     scene_bank_up_button=when_bank_off(self._up_button),
-        #                                                     scene_bank_down_button=when_bank_off(self._down_button),
-        #                                                     page_left_button=when_bank_on(self._left_button),
-        #                                                     page_right_button=when_bank_on(self._right_button),
-        #                                                     page_up_button=when_bank_on(self._up_button),
-        #                                                     page_down_button=when_bank_on(self._down_button),
-        #                                                     stop_track_clip_buttons=self._stop_buttons,
-        #                                                     stop_all_clips_button=self._stop_all_button,
-        #                                                     scene_launch_buttons=self._scene_launch_buttons,
-        #                                                     clip_launch_buttons=self._session_matrix)
 
-        self._button_rows = self._matrix_rows_raw
-        self._matrix_background.set_enabled(False)
 
         self._vu = VUMeters(self)
+        # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        # self._vu.layer = Layer(_session= self._vu_session, _track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         self._vu.disconnect()
         self._vu.disable()
 
