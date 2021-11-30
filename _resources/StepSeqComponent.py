@@ -59,6 +59,7 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
     # back to orig
 
     def _note_editor_setting(self):
+        # return NoteEditorSettingsComponent(self.control_surface._grid_resolution)
         return NoteEditorSettingsComponent(self.control_surface._grid_resolution,
                                            Layer(initial_encoders=self.control_surface._mixer_encoders),
                                            Layer(encoders=self.control_surface._mixer_encoders))

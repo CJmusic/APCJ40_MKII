@@ -818,16 +818,17 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
 
 
-    def _add_note_editor_setting(self):
-        return NoteEditorSettingsComponent(self._grid_resolution,
-                                           Layer(initial_encoders=self._mixer_encoders),
-                                           Layer(encoders=self._mixer_encoders))
+    # def _add_note_editor_setting(self): #commented out 2021-11-30
+    # #    return NoteEditorSettingsComponent(self._grid_resolution)
+    #     return NoteEditorSettingsComponent(self._grid_resolution,
+    #                                        Layer(initial_encoders=self._mixer_encoders),
+    #                                        Layer(encoders=self._mixer_encoders))
 
 
 
     def _on_track_offset_changed(self):
         self._matrix_modes._on_track_offset_changed()
-        if self._matrix_modes == 'VU':
+        if self._matrix_modes == 'VU':  
             self._update_vu_meters()
 
 
