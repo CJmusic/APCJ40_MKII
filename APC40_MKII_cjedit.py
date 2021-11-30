@@ -112,24 +112,25 @@ from ._resources.VUMeters import VUMeters
 
 
 #~~~~~~~~~~ CURRENT BUGS ~~~~~~~~~~~~~~
+# GENERAL
+#  - wont switch to user mode cleanly on first attempt,
+#    needs to switch to Sends mode first then it goes smooth
+#  - matrix lit on disconnect
+#  
 
-# ```
-#  - Wont start in pan/session mode 
-# looks like the background is enabled
+#  - scene launch buttons are always coloured ---> I think this is fixed 
 
-#  - wont switch to user mode cleanly 
-# needs to switch to VU mode first then it goes smooth
-# seems that VU mode is related to user mode somehow 
-
-#  - scene launch buttons are always coloured 
+# STEP SEQUENCER
 #  - playhead isnt working 
 #  - loop selector isnt working 
 
 # It looks like 
 
-#  - navigation buttons in vu mode not working
-#  - buttons lit on disconnect
-#  - somethings weird with the stop buttons
+# VU MODE 
+#  - navigation buttons in vu mode not working (they work with shift)
+#  - stop buttons dont work in vu mode 
+
+
 # ```
 
 
@@ -187,7 +188,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         # self._pan_button.send_value(ON_VALUE)
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
- 
 
 
 
@@ -604,7 +604,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
         self._vu = VUMeters(self)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
+        self._vu.layer = Layer( _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         self._vu.disconnect()
         self._vu.disable()
 

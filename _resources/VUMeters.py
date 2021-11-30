@@ -115,7 +115,7 @@ class VUMeter():
           column.append(self.parent._parent._button_rows[row_index][column_index])
         if master != True:
           strip = self.parent._parent._mixer.channel_strip(column_index)
-          column.append(self.parent._parent._stop_buttons[column_index])
+          # column.append(self.parent._parent._stop_buttons[column_index])# commented out CJ 2021-11-30
           column.extend([strip._select_button, strip._mute_button, strip._solo_button, strip._arm_button])
     return matrix
 
