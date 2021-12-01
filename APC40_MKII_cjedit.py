@@ -122,13 +122,6 @@ from ._resources.VUMeters import VUMeters
 #  - playhead isnt working 
 #  - loop selector isnt working 
 
-# It looks like 
-
-# VU MODE 
-#  - navigation buttons in vu mode not working (they work with shift)
-#  - stop buttons dont work in vu mode 
-
-
 # ```
 
 
@@ -140,13 +133,11 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()
         self._crossfade_button_skin = make_crossfade_button_skin()
-        # self._crossfade_button_skin = None
         self._double_press_context = DoublePressContext()
         self._shift_button = None
-        # self._undo_button = None
-        # self._redo_button = None
 
         self._implicit_arm = True # Set to True to auto arm the selected track
+
         with self.component_guard():
             self._create_controls() #controls seem to all be working
             self._create_bank_toggle()
@@ -163,14 +154,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             self._skin = make_custom_skin() # is this working ?
             self._clip_creator = ClipCreator()
 
-            # self._create_background()
-            # self._create_instrument() #this isn't switching to cleanly
             self._create_drum_component()
-            self._create_step_sequencer() #this isn't working at all
-            # self._init_note_repeat() #this is always on the toggle isn't working
-            # self._init_VUMeters()
-
-            # self._create_session()
+            self._create_step_sequencer() 
 
             self._create_vu()
             self._create_session() # runs this twice to start in session mode, need to fix this 
@@ -182,8 +167,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
             self.set_feedback_channels(FEEDBACK_CHANNELS)
 
-        # ON_VALUE = ButtonValue(127)
-        # self._pan_button.send_value(ON_VALUE)
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
 
@@ -502,18 +485,13 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             scroll_down_button=self._with_shift(self._down_button))
 
     def _create_vu(self):
-        def when_bank_on(button):
-                    return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
                                                 enable_skinning=True)
         self._button_rows = self._matrix_rows_raw
         # self._matrix_background.set_enabled(False)
         self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
-        self._parent._track_stop_buttons = self._stop_buttons 
+        # self._parent._track_stop_buttons = self._stop_buttons 
         # self._parent._scene_launch_buttons = self._scene_launch_buttons
         # self._parent._matrix = self._session_matrix
 
@@ -540,8 +518,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
     
     def _update_vu_meters(self):
-        # self._matrix_background.set_enabled(False)
-
         if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
         else:
@@ -572,16 +548,15 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
-        
         self._session.set_enabled(False)
         # self._session_zoom._on_zoom_value(1) #zoom out
         self._session_zoom.set_enabled(True)
         self._session_zoom._is_zoomed_out = False
         # self._session_zoom.set_zoom_button(self._parent._shift_button)
         self._session_zoom.update()
-
         self._update_vu_meters()
-        return [self._vu, self._view_control, self._session_zoom]
+        # return [self._vu, self._view_control, self._session_zoom]
+        return [self._session, self._view_control, self._session_zoom]
 
 
 
