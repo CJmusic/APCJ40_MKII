@@ -165,7 +165,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             self._skin = make_custom_skin() # is this working ?
             self._clip_creator = ClipCreator()
 
-            self._create_background()
+            # self._create_background()
             # self._create_instrument() #this isn't switching to cleanly
             self._create_drum_component()
             self._create_step_sequencer() #this isn't working at all
@@ -434,22 +434,22 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def _product_model_id_byte(self):
         return 41
 
-    def _create_background(self):
-        self._background = BackgroundComponent(is_root=True)
-        self._background.set_enabled(False)
-        self._background.layer = Layer(stop_buttons=self._stop_buttons)  # , display_line2=self._display_line2, display_line3=self._display_line3, display_line4=self._display_line4, top_buttons=self._select_buttons, bottom_buttons=self._track_state_buttons, scales_button=self._scale_presets_button, octave_up=self._octave_up_button, octave_down=self._octave_down_button, side_buttons=self._side_buttons, repeat_button=self._repeat_button, accent_button=self._accent_button, double_button=self._double_button, in_button=self._in_button, out_button=self._out_button, param_controls=self._global_param_controls, param_touch=self._global_param_touch_buttons, tempo_control_tap=self._tempo_control_tap, master_control_tap=self._master_volume_control_tap, touch_strip=self._touch_strip_control, touch_strip_tap=self._touch_strip_tap, nav_up_button=self._nav_up_button, nav_down_button=self._nav_down_button, nav_left_button=self._nav_left_button, nav_right_button=self._nav_right_button, aftertouch=self._aftertouch_control, pad_parameters=self._pad_parameter_control, _notification=self._notification.use_single_line(2), priority=consts.BACKGROUND_PRIORITY)
+    # def _create_background(self):
+    #     self._background = BackgroundComponent(is_root=True)
+    #     self._background.set_enabled(False)
+    #     self._background.layer = Layer(stop_buttons=self._stop_buttons)  # , display_line2=self._display_line2, display_line3=self._display_line3, display_line4=self._display_line4, top_buttons=self._select_buttons, bottom_buttons=self._track_state_buttons, scales_button=self._scale_presets_button, octave_up=self._octave_up_button, octave_down=self._octave_down_button, side_buttons=self._side_buttons, repeat_button=self._repeat_button, accent_button=self._accent_button, double_button=self._double_button, in_button=self._in_button, out_button=self._out_button, param_controls=self._global_param_controls, param_touch=self._global_param_touch_buttons, tempo_control_tap=self._tempo_control_tap, master_control_tap=self._master_volume_control_tap, touch_strip=self._touch_strip_control, touch_strip_tap=self._touch_strip_tap, nav_up_button=self._nav_up_button, nav_down_button=self._nav_down_button, nav_left_button=self._nav_left_button, nav_right_button=self._nav_right_button, aftertouch=self._aftertouch_control, pad_parameters=self._pad_parameter_control, _notification=self._notification.use_single_line(2), priority=consts.BACKGROUND_PRIORITY)
 
-        self._matrix_background = BackgroundComponent()
-        self._matrix_background.set_enabled(False)
-        self._matrix_background.layer = Layer(matrix=self._session_matrix)
+    #     self._matrix_background = BackgroundComponent()
+    #     self._matrix_background.set_enabled(False)
+    #     self._matrix_background.layer = Layer(matrix=self._session_matrix)
 
-        self._mod_background = ModifierBackgroundComponent(is_root=True)
-        self._mod_background.set_enabled(False)
-        self._mod_background.layer = Layer(shift_button=self._shift_button)
+    #     self._mod_background = ModifierBackgroundComponent(is_root=True)
+    #     self._mod_background.set_enabled(False)
+    #     self._mod_background.layer = Layer(shift_button=self._shift_button)
 
 
     def _create_step_sequencer(self):
-        self._matrix_background.set_enabled(False)
+        # self._matrix_background.set_enabled(False)
         # self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)#, playhead = self._playhead)
         # self._step_sequencer._nav_up_button = self._up_button
@@ -596,7 +596,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
                                                 enable_skinning=True)
         self._button_rows = self._matrix_rows_raw
-        self._matrix_background.set_enabled(False)
+        # self._matrix_background.set_enabled(False)
         self._parent = self 
         # self._parent._button_rows = self._matrix_rows_raw
         self._parent._track_stop_buttons = self._stop_buttons 
@@ -626,7 +626,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
     
     def _update_vu_meters(self):
-        self._matrix_background.set_enabled(False)
+        # self._matrix_background.set_enabled(False)
 
         if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
@@ -641,7 +641,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
         self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
         self._matrix_modes.default_behaviour = ImmediateBehaviour()
-        self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
+        # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
         self._matrix_modes.add_mode('sends', self._session_mode_layers())
         self._matrix_modes.add_mode('session', self._session_mode_layers())
         self._matrix_modes.add_mode('VU', self._vu_mode_layers())
@@ -689,7 +689,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         #self._user_modes.selected_mode = 'drums'
 
         # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
-        return [self._step_sequencer, self._view_control, self._matrix_background]  # , self._mixer
+        return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
 
     # def _user2_mode_layers(self):
 
@@ -754,10 +754,10 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def _on_drum_group_changed(self):
         #self._shift_button.receive_value(127)
         # #self.schedule_message(1, self.resetshift)
-        self._matrix_background.set_enabled(True)
+        # self._matrix_background.set_enabled(True)
         # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
-        self._matrix_background.set_enabled(False)
+        # self._matrix_background.set_enabled(False)
 
         # if self._matrix_modes.selected_mode != 'session':
         #     pass
@@ -769,8 +769,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def shiftmodedisable(self):
         self._matrix_modes.selected_mode = 'disabled'
 
-    def disablebackground(self):
-        self._matrix_background.set_enabled(False)
+    # def disablebackground(self):
+        # self._matrix_background.set_enabled(False)
 
 
 
@@ -781,8 +781,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._vu.disconnect()
         self._vu.disable() 
 
-        self._matrix_background.set_enabled(True)
-        self.schedule_message(1, self.disablebackground)
+        # self._matrix_background.set_enabled(True)
+        # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
         self._update_auto_arm(selected_mode=mode)
 
@@ -794,8 +794,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
         self.reset_controlled_track()
 
-        if self._matrix_modes.selected_mode == 'VU':
-            self._matrix_background.set_enabled(False)
+        # if self._matrix_modes.selected_mode == 'VU':
+        #     self._matrix_background.set_enabled(False)
 
 
     def _update_auto_arm(self, selected_mode=None):
