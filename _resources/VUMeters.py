@@ -311,6 +311,9 @@ class VUMeters(ControlSurfaceComponent):
           self.observe(self._session_offset)
         pass
 
+    # def on_track_offset_changed(self): #added CJ 2021-12-01
+    #   self.update()
+
     def on_enabled_changed(self):
         self.update()
 

@@ -102,15 +102,15 @@ from _Framework.SubjectSlot import subject_slot
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
-from ._resources.MatrixModesComponent import MatrixModesComponent
+# from ._resources.MatrixModesComponent import MatrixModesComponent
 from ._resources.ShiftableSelectorComponent import ShiftableSelectorComponent
 from ._resources.ConfigurableButtonElement import ConfigurableButtonElement 
 
 from ._resources.VUMeters import VUMeters
 
 
-
-#~~~~~~~~~~ CURRENT BUGS ~~~~~~~~~~~~~~
+ 
+#~~~~~~~~~~ CURRENT BUGS AND TODO ~~~~~~~~~~~~~~
 # GENERAL
 #  - wont switch to user mode cleanly on first attempt,
 #    needs to switch to Sends mode first then it goes smooth
@@ -120,7 +120,10 @@ from ._resources.VUMeters import VUMeters
 # STEP SEQUENCER
 #  - playhead isnt working 
 #  - loop selector isnt working 
-#  - DRUM LEDS WORK WHEN SEQUENCED NOW FOR SOME REASON ONLY OCCASIONALLY 
+#  - DRUM LEDS WORK WHEN SEQUENCED NOW FOR SOME REASON ONLY OCCASIONALLY, switching modes turns it off 
+
+# VU MODE 
+ # - nav buttons work but VU meters don't update with track offset 
 
 
 
@@ -510,6 +513,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._vu.disable()
 
         self._shift_button.add_value_listener(self._shift_value)
+        self._right_button.add_value_listener(self._shift_value)
+        self._left_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
@@ -524,11 +529,13 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
     
     def _update_vu_meters(self):
+        # self._vu._session_offset = int(self._session_zoom._session.track_offset())
         if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
         else:
             self._vu.disconnect()
         self._vu.observe( int(self._session_zoom._session.track_offset()) )
+        # self._vu.observe( int(self._session.track_offset()) )
 
     def _create_matrix_modes(self):
 
@@ -554,15 +561,16 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
-        self._session.set_enabled(False)
+        # self._session.set_enabled(False)
         # self._session_zoom._on_zoom_value(1) #zoom out
-        self._session_zoom.set_enabled(True)
-        self._session_zoom._is_zoomed_out = False
+        # self._session_zoom.set_enabled(True)
+        # self._session_zoom._is_zoomed_out = False
         # self._session_zoom.set_zoom_button(self._parent._shift_button)
-        self._session_zoom.update()
+        # self._session_zoom.update()
+
         self._update_vu_meters()
-        # return [self._vu, self._view_control, self._session_zoom]
         return [self._session, self._view_control, self._session_zoom]
+        # return [self._vu, self._view_control, self._session_zoom]
 
 
 
@@ -613,6 +621,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._update_auto_arm(selected_mode=mode)
 
         self.reset_controlled_track()
+
+
     def _update_auto_arm(self, selected_mode=None):
         self._auto_arm.set_enabled(selected_mode or self._matrix_modes.selected_mode == 'user')
 
@@ -629,11 +639,17 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     #                                        Layer(encoders=self._mixer_encoders))
 
 
-
+    # @subject_slot('track_offset')
     def _on_track_offset_changed(self):
+        self._shift_value = 1
+        self._vu.disconnect()
+        self._vu.disable() 
+        self._update_vu_meters()
         self._matrix_modes._on_track_offset_changed()
-        if self._matrix_modes == 'VU':  
-            self._update_vu_meters()
+        # self._vu._session_offset = int(self._session_zoom._session.track_offset())
+        # self._vu.observe( int(self._session_zoom._session.track_offset()) )
+        # self._vu.observe( int(self._session.track_offset()))
+        # if self._matrix_modes == 'VU':  
 
 
 
