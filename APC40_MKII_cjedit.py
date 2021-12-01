@@ -442,12 +442,14 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def _create_step_sequencer_layer(self):
         return Layer(
             velocity_slider=self._velocity_slider,
+            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
             # [4, 1:5],  mess with this for possible future 32 pad drum rack :
 
             # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
             button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            # button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
 
             #  next_page_button = self._bank_button,
 
@@ -460,9 +462,11 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             shift_button=self._shift_button,
             # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
             loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+            # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
             # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
             # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
-            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
             # changed from [:8, :1] no change noticed as of yet
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button)
