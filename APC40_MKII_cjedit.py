@@ -120,6 +120,9 @@ from ._resources.VUMeters import VUMeters
 # STEP SEQUENCER
 #  - playhead isnt working 
 #  - loop selector isnt working 
+#  - DRUM LEDS WORK WHEN SEQUENCED NOW FOR SOME REASON ONLY OCCASIONALLY 
+
+
 
 # ```
 
@@ -464,8 +467,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
             # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
             # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
-            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
-            short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
             # changed from [:8, :1] no change noticed as of yet
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button)
