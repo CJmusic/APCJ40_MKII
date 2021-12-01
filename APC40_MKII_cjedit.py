@@ -104,7 +104,6 @@ from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
 from ._resources.MatrixModesComponent import MatrixModesComponent
 from ._resources.ShiftableSelectorComponent import ShiftableSelectorComponent
-from ._resources.StepSequencerComponent import StepSequencerComponent
 from ._resources.ConfigurableButtonElement import ConfigurableButtonElement 
 
 from ._resources.VUMeters import VUMeters
