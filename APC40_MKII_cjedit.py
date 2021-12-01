@@ -118,8 +118,6 @@ from ._resources.VUMeters import VUMeters
 #  - matrix lit on disconnect
 #  
 
-#  - scene launch buttons are always coloured ---> I think this is fixed 
-
 # STEP SEQUENCER
 #  - playhead isnt working 
 #  - loop selector isnt working 
@@ -434,18 +432,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def _product_model_id_byte(self):
         return 41
 
-    # def _create_background(self):
-    #     self._background = BackgroundComponent(is_root=True)
-    #     self._background.set_enabled(False)
-    #     self._background.layer = Layer(stop_buttons=self._stop_buttons)  # , display_line2=self._display_line2, display_line3=self._display_line3, display_line4=self._display_line4, top_buttons=self._select_buttons, bottom_buttons=self._track_state_buttons, scales_button=self._scale_presets_button, octave_up=self._octave_up_button, octave_down=self._octave_down_button, side_buttons=self._side_buttons, repeat_button=self._repeat_button, accent_button=self._accent_button, double_button=self._double_button, in_button=self._in_button, out_button=self._out_button, param_controls=self._global_param_controls, param_touch=self._global_param_touch_buttons, tempo_control_tap=self._tempo_control_tap, master_control_tap=self._master_volume_control_tap, touch_strip=self._touch_strip_control, touch_strip_tap=self._touch_strip_tap, nav_up_button=self._nav_up_button, nav_down_button=self._nav_down_button, nav_left_button=self._nav_left_button, nav_right_button=self._nav_right_button, aftertouch=self._aftertouch_control, pad_parameters=self._pad_parameter_control, _notification=self._notification.use_single_line(2), priority=consts.BACKGROUND_PRIORITY)
-
-    #     self._matrix_background = BackgroundComponent()
-    #     self._matrix_background.set_enabled(False)
-    #     self._matrix_background.layer = Layer(matrix=self._session_matrix)
-
-    #     self._mod_background = ModifierBackgroundComponent(is_root=True)
-    #     self._mod_background.set_enabled(False)
-    #     self._mod_background.layer = Layer(shift_button=self._shift_button)
 
 
     def _create_step_sequencer(self):
@@ -514,78 +500,6 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             #    mute_button=self._global_mute_button,
             scroll_up_button=self._with_shift(self._up_button),
             scroll_down_button=self._with_shift(self._down_button))
-
-    # def _create_instrument(self):
-    #     instrument_basic_layer = Layer(
-    #         # octave_strip=self._with_shift(self._touch_strip_control),
-    #         #   capture_button = self._tap_tempo_button,
-    #         #scales_toggle_button=self._metronome_button,
-    #         octave_up_button=self._up_button,
-    #         octave_down_button=self._down_button,
-    #         scale_up_button=self._with_shift(self._up_button),
-    #         scale_down_button=self._with_shift(self._down_button))
-
-    #     self._instrument = MelodicComponent(skin=self._skin, is_enabled=False,
-    #                                         clip_creator=self._clip_creator, name='Melodic_Component',
-    #                                         grid_resolution=self._grid_resolution,
-    #                                         note_editor_settings=self._add_note_editor_setting(),
-    #                                         layer=self._create_instrument_layer(),
-    #                                         instrument_play_layer=Layer(
-    #                                             octave_up_button=self._up_button,
-    #                                             octave_down_button=self._down_button,
-    #                                             scale_up_button=self._with_shift(self._up_button),
-    #                                             scale_down_button=self._with_shift(self._down_button),
-    #                                             matrix=self._session_matrix
-    #                                         ),
-    #                                         # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
-    #                                         # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
-    #                                         # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
-    #                                         instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
-    #                                         )
-    #     self._on_note_editor_layout_changed.subject = self._instrument
-
-
-
-    # def _create_instrument_layer(self):
-    #     return Layer(
-    #         playhead=self._playhead,
-    #         velocity_slider=self._velocity_slider,
-    #         # mute_button=self._global_mute_button,
-    #         quantization_buttons=self._stop_buttons,
-    #         loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
-    #         short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
-    #         #note_editor_matrices=ButtonMatrixElement(
-    #         #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
-    #         note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
-
-
-    # def enter_note_mode_layout(self):
-    #     self._matrix_modes.selected_mode = 'user'
-    #     self._select_note_mode()
-
-    #     #if self._user_modes.selected_mode == 'instrument':
-    #     #    self._instrument._set_selected_mode(self._instrument.selected_mode)
-    #     #el
-    #     if self._user_modes.selected_mode == 'drums':
-    #         self._drum_modes._set_selected_mode(self._drum_modes.selected_mode)
-
-    #     self.reset_controlled_track()
-
-    # def exit_note_mode_layout(self):
-    #     self.reset_controlled_track()
-
-    # def switch_note_mode_layout(self):
-    #     self._matrix_modes.selected_mode = 'user'
-    #     self._select_note_mode()
-
-    #     #if self._user_modes.selected_mode == 'instrument':
-    #     #   getattr(self._instrument, 'cycle_mode', nop)()
-    #     #el
-    #     if self._user_modes.selected_mode == 'drums':
-    #         getattr(self._drum_modes, 'cycle_mode', nop)()
-
-    #     self.reset_controlled_track()
-
 
     def _create_vu(self):
         def when_bank_on(button):
@@ -691,77 +605,16 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
         return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
 
-    # def _user2_mode_layers(self):
-
-    #     self._user_modes = ModesComponent(name='Instrument_Modes', is_enabled=False)
-    #     #self._user_modes.add_mode('drums', [self._drum_modes])
-    #     self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
-    #     self._user_modes.selected_mode = 'instrument'
-
-    #     return [self._user_modes, self._view_control, self._matrix_background]  # , self._mixer
-
-    # def _init_note_repeat(self):
-    #     self._note_repeat = NoteRepeatComponent(is_enabled=False,name='Note_Repeat')
-    #     self._note_repeat.set_enabled(False)
-    #     self._note_repeat.set_note_repeat(self._c_instance.note_repeat)
-    #     self._note_repeat.layer = Layer(
-    #         # aftertouch_control=self._aftertouch_control,
-    #         select_buttons=self._shifted_stop_buttons
-    #         # pad_parameters=self._pad_parameter_control
-    #     )
-    #     self._note_repeat.layer.priority = consts.DIALOG_PRIORITY
-    #     self._note_repeat_enabler = EnablingModesComponent(name='Note_Repeat_Enabler', component=self._note_repeat,
-    #                                                        toggle_value='DefaultButton.Alert',
-    #                                                        disabled_value='DefaultButton.On')
-    #     self._note_repeat_enabler.set_enabled(False)
-    #     self._note_repeat_enabler.layer = Layer(toggle_button=self._with_shift(self._bank_button))
-
-
-
-
-    # def _select_note_mode(self):
-    #     """
-    #     Selects which note mode to use depending on the kind of
-    #     current selected track and its device chain...
-    #     """
-    #     track = self.song().view.selected_track
-    #     drum_device = self._drum_group_finder.drum_group
-    #     self._step_sequencer.set_drum_group_device(drum_device)
-    #     self._drum_component.set_drum_group_device(drum_device)
-    #     if track == None or track.is_foldable or track in self.song().return_tracks or track == self.song().master_track or track.is_frozen:
-    #         self._user_modes.selected_mode = 'disabled'
-    #     elif track and track.has_audio_input:
-    #         self._user_modes.selected_mode = 'disabled'
-    #         #self._note_modes.selected_mode = 'looper'
-    #     elif drum_device:
-    #         self._user_modes.selected_mode = 'drums'
-    #     #else:
-        #    self._user_modes.selected_mode = 'instrument'
-        #self.reset_controlled_track()
-
 
     @subject_slot('value')
     def value_changed(self, value):
         print('value_changed')
         print(value)
-        '''if self.is_enabled() and not self._device_mode:
-            if value > 0 or not self._bank_down_button.is_momentary():
-                new_mode = max(self._mode_index - 1, 0)
-                self.set_mode(new_mode)'''
 
 
     @subject_slot('drum_group')
     def _on_drum_group_changed(self):
-        #self._shift_button.receive_value(127)
-        # #self.schedule_message(1, self.resetshift)
-        # self._matrix_background.set_enabled(True)
-        # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
-        # self._matrix_background.set_enabled(False)
-
-        # if self._matrix_modes.selected_mode != 'session':
-        #     pass
-            #self._select_note_mode()
 
     def resetshift(self):
             self._shift_button.receive_value(0)
@@ -769,53 +622,23 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def shiftmodedisable(self):
         self._matrix_modes.selected_mode = 'disabled'
 
-    # def disablebackground(self):
-        # self._matrix_background.set_enabled(False)
-
-
 
     @subject_slot('selected_mode')
     def _on_matrix_mode_changed(self, mode):
-        #self._shift_button.receive_value(127)
-        #self.schedule_message(1, self.resetshift)
         self._vu.disconnect()
         self._vu.disable() 
 
-        # self._matrix_background.set_enabled(True)
-        # self.schedule_message(1, self.disablebackground)
         self.reset_controlled_track()
         self._update_auto_arm(selected_mode=mode)
 
-        # if self._matrix_modes.selected_mode != 'disabled':
-        #     if self._implicit_arm:
-        #         self._update_auto_arm(selected_mode=mode)
-        #     self.reset_controlled_track()
-
-
         self.reset_controlled_track()
-
-        # if self._matrix_modes.selected_mode == 'VU':
-        #     self._matrix_background.set_enabled(False)
-
-
     def _update_auto_arm(self, selected_mode=None):
         self._auto_arm.set_enabled(selected_mode or self._matrix_modes.selected_mode == 'user')
 
-    # @subject_slot('selected_mode')
-    # def _on_note_editor_layout_changed(self, mode):
-    #     self.reset_controlled_track()
-    #     # pass
-    #    # self.reset_controlled_track(mode)
 
 
     def reset_controlled_track(self, mode=None):
-        #if mode == None:
-        #   mode = self._instrument.selected_mode
-        #if self._instrument and self._instrument.is_enabled() and mode == 'sequence':
-        #    self.release_controlled_track()
-        #else:
         self.set_controlled_track(self.song().view.selected_track)
-
 
 
     # def _add_note_editor_setting(self): #commented out 2021-11-30
