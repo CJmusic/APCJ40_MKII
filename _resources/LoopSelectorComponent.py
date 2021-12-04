@@ -1,6 +1,8 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/LoopSelectorComponent.py
+
 from __future__ import with_statement
 from functools import partial
+import sys
 from _Framework import Task
 from _Framework import Defaults
 from _Framework.Control import ButtonControl
@@ -97,6 +99,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._on_song_playback_status_changed.subject = self.song()
         if paginator is not None:
             self.set_paginator(paginator)
+        
 
     @property
     def playing_position(self):
@@ -112,10 +115,14 @@ class LoopSelectorComponent(ControlSurfaceComponent):
     is_following = property(_get_is_following, _set_is_following)
 
     def set_paginator(self, paginator):
+        self.log('SET_PAGINATOR CALLED')
+        self.log(self._paginator)
         self._paginator = paginator or Paginator()
         self._on_page_index_changed.subject = paginator
         self._on_page_length_changed.subject = paginator
         self._update_page_colors()
+        self.log(self._paginator)
+
 
     @subject_slot('page_index')
     def _on_page_index_changed(self):
@@ -232,7 +239,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._paginator.select_page_in_point(position)
 
     def _update_page_and_playhead_leds(self):
-
+        self.log('UPDATE PAGE AND PLAYHEAD LEDS CALLED')
         @contextmanager
         def save_page_color(page_colors, page):
             old_page_value = page_colors[page]
@@ -308,6 +315,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 page_colors = list(page_colors)
                 if page_colors[button_index].startswith('LoopSelector.InsideLoop'):
                     page_colors[button_index] = 'LoopSelector.SelectedPage'
+                # page_colors = map(page_colors)
 
         page_colors = calculate_page_colors()
         mark_selected_pages(page_colors)
@@ -315,16 +323,21 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._update_page_and_playhead_leds()
 
     def _update_page_leds(self):
+        self.log('UPDATE LIGHTS CALLED')
         self._update_page_leds_in_matrix(self._loop_selector_matrix)
         self._update_page_leds_in_matrix(self._short_loop_selector_matrix)
 
     def _update_page_leds_in_matrix(self, matrix):
+        self.log('UPDATE LIGHTS IN MATRIX CALLED')
+
         """ update hardware leds to match precomputed map """
+        # if matrix:
         if self.is_enabled() and matrix:
             for button, color in zip(matrix, self._page_colors):
                 if button and (color == 'LoopSelector.Playhead' or color == 'LoopSelector.OutsideLoop' or isinstance(button, DoublePressElement)):
                     if color == 'LoopSelector.Playhead' or (not hasattr(button, '_skin_name') or button._skin_name == 'NoteEditor.StepEmpty'):
                         button.set_light(color)
+                        self.log('LIGHTS UPDATING IN MATRIX')
 
     def _jump_to_page(self, next_page):
         start, length = self._get_loop_in_pages()
@@ -475,3 +488,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             if self._can_follow:
                 self.is_following = not self.is_following
                 self._update_follow_button()
+
+    def log(self, message):
+        pass
+        # sys.stderr.write("LOG: " + message.encode("utf-8"))

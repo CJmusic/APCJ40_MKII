@@ -83,7 +83,7 @@ class OptionsComponent(ControlSurfaceComponent):
             if currently_selected_option != self.selected_option:
                 self.notify_selected_option(self.selected_option)
         self._update_select_buttons()
-        # self._update_data_sources()
+        self._update_data_sources()
 
     option_names = property(_get_option_names, _set_option_names)
 
@@ -95,13 +95,13 @@ class OptionsComponent(ControlSurfaceComponent):
         #     raise AssertionError
         self._selected_option = selected_option
         self._update_select_buttons()
-        # self._update_data_sources()
+        self._update_data_sources()
 
     selected_option = property(_get_selected_option, _set_selected_option)
 
     def set_display_line(self, line):
         if line:
-            # self._update_data_sources()
+            self._update_data_sources()
             line.set_num_segments(len(self._data_sources))
             for segment in range(len(self._data_sources)):
                 line.segment(segment).set_data_source(self._data_sources[segment])
@@ -144,14 +144,17 @@ class OptionsComponent(ControlSurfaceComponent):
         for index, button in enumerate(self.select_buttons):
             button.color = self.selected_color if index == self._selected_option else self.unselected_color
 
-    # def _update_data_sources(self):
-    #     # for index, source, name in enumerate(map(None, self._data_sources, self.option_names)):
-    #     # for index, source, name in enumerate( range(num_display_segments) , self._data_sources, self.option_names):
-    #     for source, name in enumerate(self._data_sources, self.option_names)
-    #         if name:
-    #             source.set_display_string((consts.CHAR_SELECT if index == self._selected_option else ' ') + name)
-    #         else:
-    #             source.set_display_string('')
+    def _update_data_sources(self): ### COMMENTED OUT CJ 2021-12-04
+        index = 0
+        # for index, source, name in enumerate(map(None, self._data_sources, self.option_names)):
+        for source, name in enumerate((self._data_sources, self.option_names)):
+        # for index, source, name in list(self._data_sources, self.option_names):
+            index += 1 
+            if name:
+                # source.set_display_string((consts.CHAR_SELECT if index == self._selected_option else ' ') + name)
+                self._data_sources[source].set_display_string((consts.CHAR_SELECT if index == self._selected_option else ' ').join(map(str, name)))
+            else:
+                source.set_display_string('')
 
 
 class ActionWithOptionsComponent(ActionWithSettingsComponent):

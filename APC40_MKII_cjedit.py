@@ -122,11 +122,15 @@ from ._resources.VUMeters import VUMeters
 #  - loop selector isnt working 
 #  - DRUM LEDS WORK WHEN SEQUENCED NOW FOR SOME REASON ONLY OCCASIONALLY, switching modes turns it off 
 
+# DRUM LEDS only work is script is switched to while ableton is running, it doesn't enable when loaded on startup
+
 # VU MODE 
- # - nav buttons work but VU meters don't update with track offset 
+ # - nav buttons work but VU meters don't update with track offset or red box
 
+# POSSIBLE CAUSES : 
 
-
+# DRAW COLORS ASSERTION ERRORS WERE COMMENTED OUT DURING PYTHON 2-3, maybe they are being raised
+# 
 # ```
 
 
@@ -306,13 +310,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         self._double_press_event_matrix = ButtonMatrixElement(name='Double_Press_Event_Matrix',
                                                               rows=recursive_map(lambda x: x.double_press,
                                                                                  double_press_rows))
+
         self._playhead = PlayheadElement(self._c_instance.playhead)
-
-        self._undo_button = self._with_shift(self._device_control_buttons_raw[6])
-        self._undo_button.name = 'Undo_Button'
-        self._redo_button = self._with_shift(self._device_control_buttons_raw[7])
-        self._redo_button.name = 'Redo_Button'
-
 
 
     def _create_bank_toggle(self):
@@ -449,6 +448,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
             velocity_slider=self._velocity_slider,
             # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._double_press_matrix.submatrix[:4, 1:5],
             # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
             # [4, 1:5],  mess with this for possible future 32 pad drum rack :
 
@@ -496,6 +496,28 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     def _create_vu(self):
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
                                                 enable_skinning=True)
+
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
+        # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+        #                                         enable_skinning=True,
+        #                                         layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
+        #                                                     track_bank_right_button=when_bank_off(self._right_button),
+        #                                                     scene_bank_up_button=when_bank_off(self._up_button),
+        #                                                     scene_bank_down_button=when_bank_off(self._down_button),
+        #                                                     page_left_button=when_bank_on(self._left_button),
+        #                                                     page_right_button=when_bank_on(self._right_button),
+        #                                                     page_up_button=when_bank_on(self._up_button),
+        #                                                     page_down_button=when_bank_on(self._down_button),
+        #                                                     stop_track_clip_buttons=self._stop_buttons,
+        #                                                     stop_all_clips_button=self._stop_all_button,
+        #                                                     scene_launch_buttons=self._scene_launch_buttons,
+                                                            # clip_launch_buttons=self._session_matrix))
+
         self._button_rows = self._matrix_rows_raw
         # self._matrix_background.set_enabled(False)
         self._parent = self 
@@ -505,16 +527,26 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         # self._parent._matrix = self._session_matrix
 
 
-        self._vu = VUMeters(self)
+        self._vu = VUMeters(self, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
+                                                                                                                    down_button = self._down_button,
+                                                                                                                    left_button = self._left_button, 
+                                                                                                                    right_button = self._right_button,
+                                                                                                                    session_stop_buttons = self._stop_buttons))
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        self._vu.layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
-        self._vu.disconnect()
-        self._vu.disable()
+        # self._vu.layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
+        #                                                                                                             down_button = self._down_button,
+        #                                                                                                             left_button = self._left_button, 
+        #                                                                                                             right_button = self._right_button,
+        #                                                                                                             session_stop_buttons = self._stop_buttons)
+        # self._vu.disconnect()
+        # self._vu.disable()
 
+
+        # THIS IS REALLY JANK 
         self._shift_button.add_value_listener(self._shift_value)
-        self._right_button.add_value_listener(self._shift_value)
-        self._left_button.add_value_listener(self._shift_value)
+        # self._right_button.add_value_listener(self._shift_value)
+        # self._left_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
@@ -530,6 +562,8 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     
     def _update_vu_meters(self):
         # self._vu._session_offset = int(self._session_zoom._session.track_offset())
+        # self._shift_button.send_value(0)
+
         if self._vu == None and self._matrix_modes.selected_mode == 'VU':
             self._vu = VUMeters(self._parent)
         else:
@@ -561,6 +595,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
         return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
+
         # self._session.set_enabled(False)
         # self._session_zoom._on_zoom_value(1) #zoom out
         # self._session_zoom.set_enabled(True)
@@ -641,9 +676,10 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
 
     # @subject_slot('track_offset')
     def _on_track_offset_changed(self):
-        self._shift_value = 1
-        self._vu.disconnect()
-        self._vu.disable() 
+        # self._shift_value = 1
+        # self._vu.disconnect()
+        # self._vu.disable() 
+        self._vu._on_track_offset_changed(self._session.track_offset())
         self._update_vu_meters()
         self._matrix_modes._on_track_offset_changed()
         # self._vu._session_offset = int(self._session_zoom._session.track_offset())

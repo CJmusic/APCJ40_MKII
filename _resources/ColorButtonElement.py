@@ -10,7 +10,8 @@ class ColorButtonElement(ConfigurableButtonElement):
       On = Rgb.GREEN
       Off = Rgb.BLACK
       Disabled = Rgb.BLACK
-      Alert = Rgb.RED
+      # Alert = Rgb.RED
+      Alert = Rgb.BLACK
   default_skin = Skin(Colors)
   default_states = {True: 'DefaultButton.On',
    False: 'DefaultButton.Off'}

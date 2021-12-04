@@ -140,7 +140,15 @@ class VUMeters(ControlSurfaceComponent):
         self._connected = False
         self._session_offset = 0
         self._enabled = True
-          
+        self.up_button = self._parent._up_button
+        self.down_button = self._parent._down_button
+        self.left_button = self._parent._left_button
+        self.right_button = self._parent._right_button
+        self.session_stop_buttons = self._parent._stop_buttons
+
+
+        self._setup_session_control()
+
         for row_index in range(CLIP_GRID_Y):
           row = self._parent._button_rows[row_index]
           for button_index in range(CLIP_GRID_X):
@@ -150,12 +158,6 @@ class VUMeters(ControlSurfaceComponent):
 
     def observe(self, session_offset):
 
-        # sends OFF to all buttons before observing
-        for row_index in range(CLIP_GRID_Y):
-          row = self._parent._button_rows[row_index]
-          for button_index in range(CLIP_GRID_X):
-            button = row[button_index]
-            button.send_value(LED_OFF)
 
         self._session_offset = session_offset
         visible_tracks = []
@@ -167,6 +169,12 @@ class VUMeters(ControlSurfaceComponent):
             visible_tracks.append(track)
           i +=1
 
+        # sends OFF to all buttons before observing
+        for row_index in range(CLIP_GRID_Y):
+          row = self._parent._button_rows[row_index]
+          for button_index in range(CLIP_GRID_X):
+            button = row[button_index]
+            button.send_value(LED_OFF)
         
         for row_index in range(NUM_METERS):
           
@@ -303,6 +311,12 @@ class VUMeters(ControlSurfaceComponent):
               # button.send_value(LED_OFF, True)
               button.send_value(LED_OFF)
 
+    def _setup_session_control(self):
+      self._parent._session.set_scene_bank_buttons(self.down_button, self.up_button)
+      self._parent._session.set_track_bank_buttons(self.right_button, self.left_button)
+      self._parent._session.set_stop_track_clip_buttons(tuple(self.session_stop_buttons))
+
+
     # boilerplate
     def update(self):
         # self.update()
@@ -311,8 +325,9 @@ class VUMeters(ControlSurfaceComponent):
           self.observe(self._session_offset)
         pass
 
-    # def on_track_offset_changed(self): #added CJ 2021-12-01
-    #   self.update()
+    def _on_track_offset_changed(self, offset): #added CJ 2021-12-01
+      self._session_offset = offset
+      self.update()
 
     def on_enabled_changed(self):
         self.update()
@@ -328,6 +343,9 @@ class VUMeters(ControlSurfaceComponent):
 
     def on_scene_list_changed(self):
         pass
+
+    # def on_track_offset_changed(self):
+    #   pass
 
 '''
 

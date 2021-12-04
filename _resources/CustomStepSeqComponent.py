@@ -177,11 +177,11 @@ class StepSeqComponent(CompoundComponent):
         self._on_detail_clip_changed.subject = self.song().view
         self._detail_clip = None
         self._playhead = None
-        self._playhead_component = self.register_component(PlayheadComponent(  ### THESE ARE DIFFERENT FROM StepSeqComponent.py
+        self._playhead_component = self.register_component(PlayheadComponent(  
             grid_resolution=grid_resolution,
             paginator=self._paginator,
             follower=self._loop_selector,
-            notes=chain(*starmap(
+            notes=chain(*starmap( ### THESE ARE DIFFERENT FROM StepSeqComponent.py
                 range, (
                     (92, 100),
                     (84, 92),
@@ -197,6 +197,15 @@ class StepSeqComponent(CompoundComponent):
                 ))), feedback_channels=[PLAYHEAD_FEEDBACK_CHANNELS]))
         self._skin = skin
         self._playhead_color = 'NoteEditor.Playhead'
+
+        self.log_message('INIT CUSTOMSTEPSEQ COMPLETE')
+        self.log_message(self._playhead)
+        self.log_message(self._playhead_component)
+        self.log_message(self._loop_selector)
+        self.log_message(self._big_loop_selector)
+
+
+
 
     def set_playhead(self, playhead):
         self._playhead = playhead

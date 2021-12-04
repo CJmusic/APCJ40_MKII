@@ -43,7 +43,7 @@ class RgbColor(Color):
         if interface.is_rgb:
             super(RgbColor, self).draw(interface)
         else:
-            raise NotDrawableError# as 'Rgb color ' + str(self._rgb_value) + ' not drawable in ' + interface.name
+            raise NotDrawableError('Rgb color ' + str(self._rgb_value) + ' not drawable in ' + interface.name)
 
     def __iter__(self):
         return iter(self._rgb_value)
@@ -61,8 +61,8 @@ class FallbackColor(Color):
 
     def __init__(self, default_color = None, *a, **k):
         super(FallbackColor, self).__init__(*a, **k)
-        # self.default_color = default_color
-        self.default_color = Rgb.BLACK
+        self.default_color = default_color
+        # self.default_color = Rgb.BLACK
 
     def draw(self, interface):
         try:
@@ -94,7 +94,7 @@ class AnimatedColor(Color):
         interface.send_value(self.color2.midi_value, channel=self.channel2)
 
     def convert_to_midi_value(self):
-        raise NotImplementedError#, 'Animations cannot be serialized'
+        raise NotImplementedError('Animations cannot be serialized')
 
 
 class Pulse(AnimatedColor):
