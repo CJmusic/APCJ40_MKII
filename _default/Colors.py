@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_CJedit/Colors.py
+#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APCJ40_MKII/Colors.py
 from __future__ import absolute_import, print_function, unicode_literals
 LIVE_COLORS_TO_MIDI_VALUES = {10927616: 74,
  16149507: 84,

@@ -1,10 +1,10 @@
-#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_MKII_cjedit/__init__.py
+#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APCJ40_MKII/__init__.py
 from __future__ import absolute_import, print_function, unicode_literals
 from _Framework.Capabilities import CONTROLLER_ID_KEY, PORTS_KEY, NOTES_CC, SCRIPT, SYNC, REMOTE, controller_id, inport, outport
-from .APC40_MKII_cjedit import APC40_MKII_cjedit
+from .APCJ40_MKII import APCJ40_MKII
 
 def create_instance(c_instance):
-    return APC40_MKII_cjedit(c_instance)
+    return APCJ40_MKII(c_instance)
 
 
 def get_capabilities():
