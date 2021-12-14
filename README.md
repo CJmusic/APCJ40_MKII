@@ -8,14 +8,12 @@ Changes:
 - nudge + + copies a clip
 - nudge + - deletes a clip
 - shift + nudge now nudges
-- Planned Changes:
 - shift + bank turns on VU meters
 - user mode is a step sequencer
 - shift + clip view is undo
 - shift + detail view is redo
 - shift + record is capture midi
 - press and hold select clip to expand or collapse a group
-- You can download the Step Sequencer Edition in the step-sequencer Branch
 
 Known Bugs:
 
