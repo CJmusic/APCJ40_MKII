@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_CJedit/APC40_CJedit.py
+#Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APCJ40_MKII/APCJ40_MKII.py
 from __future__ import absolute_import, print_function, unicode_literals
 from builtins import range
 from functools import partial
@@ -43,10 +43,10 @@ from ._resources.ConfigurableButtonElement import ConfigurableButtonElement
 from ._resources.VUMeters import VUMeters
 
 
-class APC40_CJedit(APC, OptimizedControlSurface):
+class APCJ40_MKII(APC, OptimizedControlSurface):
 
     def __init__(self, *a, **k):
-        super(APC40_CJedit, self).__init__(*a, **k)
+        super(APCJ40_MKII, self).__init__(*a, **k)
         self._color_skin = make_rgb_skin()
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()

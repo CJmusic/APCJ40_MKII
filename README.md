@@ -1,4 +1,4 @@
-# APC40_CJedit
+# APCJ40_MKII
 by chris joseph
 
 A custom remote script for the APC40 MKII for Ableton Live 11.
