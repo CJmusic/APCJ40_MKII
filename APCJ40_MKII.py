@@ -134,10 +134,10 @@ from ._resources.VUMeters import VUMeters
 # ```
 
 
-class APC40_MKII_cjedit(APC, OptimizedControlSurface):
+class APCJ40_MKII(APC, OptimizedControlSurface):
 
     def __init__(self, *a, **k):
-        super(APC40_MKII_cjedit, self).__init__(*a, **k)
+        super(APCJ40_MKII, self).__init__(*a, **k)
         self._color_skin = make_rgb_skin()
         self._default_skin = make_default_skin()
         self._stop_button_skin = make_stop_button_skin()
@@ -705,7 +705,7 @@ class APC40_MKII_cjedit(APC, OptimizedControlSurface):
     @contextmanager
     def component_guard(self):
         """ Customized to inject additional things """
-        with super(APC40_MKII_cjedit, self).component_guard():
+        with super(APCJ40_MKII, self).component_guard():
 
             with self.make_injector().everywhere():
                 yield
