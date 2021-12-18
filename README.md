@@ -1,21 +1,19 @@
 # APCJ40_MKII
 by chris joseph
 
-A custom remote script for the APC40 MKII for Ableton Live 11.
+A custom remote script for the APC40 MKII for Ableton Live 11. For Ableton Live 10 please see: https://github.com/CJmusic/APC40_MkIIx
 
 Changes:
 
 - nudge + + copies a clip
 - nudge + - deletes a clip
 - shift + nudge now nudges
-- Planned Changes:
 - shift + bank turns on VU meters
 - user mode is a step sequencer
 - shift + clip view is undo
 - shift + detail view is redo
 - shift + record is capture midi
 - press and hold select clip to expand or collapse a group
-- You can download the Step Sequencer Edition in the step-sequencer Branch
 
 Known Bugs:
 
