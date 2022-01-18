@@ -528,10 +528,10 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
         self._vu = VUMeters(self, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
-                                                                                                                    down_button = self._down_button,
-                                                                                                                    left_button = self._left_button, 
-                                                                                                                    right_button = self._right_button,
-                                                                                                                    session_stop_buttons = self._stop_buttons))
+                                                                                                                    _down_button = self._down_button,
+                                                                                                                    _left_button = self._left_button, 
+                                                                                                                    _right_button = self._right_button,
+                                                                                                                    _session_stop_buttons = self._stop_buttons))
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
@@ -545,8 +545,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
         # THIS IS REALLY JANK 
         self._shift_button.add_value_listener(self._shift_value)
-        # self._right_button.add_value_listener(self._shift_value)
-        # self._left_button.add_value_listener(self._shift_value)
+        self._right_button.add_value_listener(self._shift_value)
+        self._left_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
