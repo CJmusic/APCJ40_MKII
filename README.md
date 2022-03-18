@@ -23,7 +23,7 @@ Known Bugs:
 - the Playhead isn't showing up
 - VU meters doesn't navigate around with sessions view (as a workaround you can press shift to "refresh" the VU meters tracks) 
 
-Please contact chrisjosephsongs@gmail.com for any questions/suggestions/improvements! Stay Tuned for a Video tutorial once the Script is fully functional! 
+Please contact chrisjosephsongs@gmail.com for any questions/suggestions/improvements! Subscribe to [youtube.com/c/chrisjosephyt](https://youtube.com/c/chrisjosephyt) for a Video tutorial once the Script is fully functional! 
 
 Special Thanks to:
 
