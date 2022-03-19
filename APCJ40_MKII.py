@@ -474,7 +474,10 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
             # changed from [:8, :1] no change noticed as of yet
             drum_bank_up_button=self._up_button,
-            drum_bank_down_button=self._down_button)
+            drum_bank_down_button=self._down_button,
+            drum_bank_detail_up_button = self._with_shift(self._up_button),
+            drum_bank_detail_down_button = self._with_shift(self._down_button))
+
 
 
     def _create_drum_component(self):
@@ -490,8 +493,10 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             scroll_page_down_button=self._down_button,
             #    quantize_button=self._quantize_button,
             #    mute_button=self._global_mute_button,
+            shift_button = self._shift_button,
             scroll_up_button=self._with_shift(self._up_button),
-            scroll_down_button=self._with_shift(self._down_button))
+            scroll_down_button=self._with_shift(self._down_button),
+            )
 
     def _create_vu(self):
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
@@ -627,7 +632,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #self._user_modes.selected_mode = 'drums'
 
         # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
-        return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
+        # return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
+        return [self._step_sequencer, None, None]  # , self._mixer
 
 
     @subject_slot('value')
