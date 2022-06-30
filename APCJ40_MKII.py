@@ -1,5 +1,5 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_MkII/APC40_MkII.py
-from __future__ import absolute_import, print_function, unicode_literals
+# from __future__ import absolute_import, print_function, unicode_literals
 from builtins import range
 from functools import partial
 from contextlib import contextmanager
@@ -165,6 +165,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
             self._create_drum_component()
             self._create_step_sequencer() 
+
+            self._create_inst()
 
             self._create_vu()
             self._create_session() # runs this twice to start in session mode, need to fix this 
@@ -419,6 +421,50 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     def _product_model_id_byte(self):
         return 41
 
+    def _create_inst(self):
+        self._matrix_background = BackgroundComponent()
+        self._matrix_background.set_enabled(False)
+        # self._matrix_background.layer = Layer(matrix=self._session_matrix)
+        instrument_basic_layer = Layer(
+            # octave_strip=self._with_shift(self._touch_strip_control),
+            #   capture_button = self._tap_tempo_button,
+            #scales_toggle_button=self._metronome_button,
+            octave_up_button=self._up_button,
+            octave_down_button=self._down_button,
+            scale_up_button=self._with_shift(self._up_button),
+            scale_down_button=self._with_shift(self._down_button))
+
+        self._instrument = MelodicComponent(skin=self._skin, is_enabled=False,
+                                            clip_creator=self._clip_creator, name='Melodic_Component',
+                                            grid_resolution=self._grid_resolution,
+                                            note_editor_settings=self._add_note_editor_setting(),
+                                            layer=self._create_inst_layer(),
+                                            instrument_play_layer=Layer(
+                                                octave_up_button=self._up_button,
+                                                octave_down_button=self._down_button,
+                                                scale_up_button=self._with_shift(self._up_button),
+                                                scale_down_button=self._with_shift(self._down_button),
+                                                matrix=self._session_matrix
+                                            ),
+                                            # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
+                                            # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
+                                            # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
+                                            instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
+                                            )
+        # self._on_note_editor_layout_changed.subject = self._instrument
+
+    def _create_inst_layer(self):
+        return Layer(
+            playhead=self._playhead,
+            velocity_slider=self._velocity_slider,
+            # mute_button=self._global_mute_button,
+            quantization_buttons=self._stop_buttons,
+            loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
+            #note_editor_matrices=ButtonMatrixElement(
+            #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
+            note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
+
 
 
     def _create_step_sequencer(self):
@@ -555,7 +601,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
-        if (self._matrix_modes.selected_mode == 'VU' and self._vu != None):
+        if (self._matrix_modes.selected_mode == u'VU' and self._vu != None):
             if value != 0:
                 self._vu.disconnect()
                 self._vu.disable()
@@ -588,11 +634,30 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode('session', self._session_mode_layers())
         self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode('inst', self._inst_mode_layers())
 
-        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button), inst_button= self._with_shift(self._user_button))
         self._on_matrix_mode_changed.subject = self._matrix_modes
         self._matrix_modes.selected_mode = u'session'
 
+
+        return Layer(
+            playhead=self._playhead,
+            velocity_slider=self._velocity_slider,
+            # mute_button=self._global_mute_button,
+            quantization_buttons=self._stop_buttons,
+            loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
+            #note_editor_matrices=ButtonMatrixElement(
+            #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
+            note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
+
+    def _inst_mode_layers(self):
+        # self._user_modes = ModesComponent(name='Instrument_Modes', is_enabled=False)
+        #self._user_modes.add_mode('drums', [self._drum_modes])
+        # self._user_modes.add_mode('inst', [self._note_repeat_enabler, self._instrument])
+        # self._matrix_modes.selected_mode = u'inst'
+        return [self._view_control, self._matrix_background]  # , self._mixer
 
     def _session_mode_layers(self):
         self._vu.disconnect()
@@ -673,11 +738,11 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self.set_controlled_track(self.song().view.selected_track)
 
 
-    # def _add_note_editor_setting(self): #commented out 2021-11-30
-    # #    return NoteEditorSettingsComponent(self._grid_resolution)
-    #     return NoteEditorSettingsComponent(self._grid_resolution,
-    #                                        Layer(initial_encoders=self._mixer_encoders),
-    #                                        Layer(encoders=self._mixer_encoders))
+    def _add_note_editor_setting(self): #commented out 2021-11-30
+    #    return NoteEditorSettingsComponent(self._grid_resolution)
+        return NoteEditorSettingsComponent(self._grid_resolution,
+                                           Layer(initial_encoders=self._mixer_encoders),
+                                           Layer(encoders=self._mixer_encoders))
 
 
     # @subject_slot('track_offset')
