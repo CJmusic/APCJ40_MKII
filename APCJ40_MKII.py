@@ -657,7 +657,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #self._user_modes.add_mode('drums', [self._drum_modes])
         # self._user_modes.add_mode('inst', [self._note_repeat_enabler, self._instrument])
         # self._matrix_modes.selected_mode = u'inst'
-        return [self._view_control, self._matrix_background]  # , self._mixer
+        return [self._instrument, self._view_control]#, self._matrix_background]  # , self._mixer
 
     def _session_mode_layers(self):
         self._vu.disconnect()
@@ -697,8 +697,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #self._user_modes.selected_mode = 'drums'
 
         # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
-        # return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
-        return [self._step_sequencer, None, None]  # , self._mixer
+        return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
+        # return [self._step_sequencer, None, None]  # , self._mixer
 
 
     @subject_slot('value')
