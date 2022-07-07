@@ -652,6 +652,28 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
             note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]]))
 
+    def _user_mode_layers(self): 
+        self._drum_group_finder = DrumGroupFinderComponent()
+        self._on_drum_group_changed.subject = self._drum_group_finder
+        self._session.set_enabled(False)
+        self.reset_controlled_track()
+
+        self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
+        self._drum_modes.add_mode('sequencer', self._step_sequencer)
+        # self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
+
+        self._drum_modes.selected_mode = 'sequencer'
+
+        self._user_modes = ModesComponent(name='User_Modes', is_enabled=False)
+        self._user_modes.add_mode('drums', [self._drum_modes])
+        # self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
+        self._user_modes.add_mode('instrument', [None, self._instrument])
+
+        self._user_modes.selected_mode = 'drums'
+
+        return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
+
+
     def _inst_mode_layers(self):
         # self._user_modes = ModesComponent(name='Instrument_Modes', is_enabled=False)
         #self._user_modes.add_mode('drums', [self._drum_modes])
