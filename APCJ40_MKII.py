@@ -1,6 +1,6 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/Live/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_MkII/APC40_MkII.py
 from __future__ import absolute_import, print_function, unicode_literals
-from builtins import range
+# from builtins import range
 from functools import partial
 from contextlib import contextmanager
 import sys
@@ -424,7 +424,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     def _create_step_sequencer(self):
         # self._matrix_background.set_enabled(False)
         # self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
-        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)#, playhead = self._playhead)
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
+        # self._create_step_sequencer = StepSeqComponent()
         # self._step_sequencer._nav_up_button = self._up_button
         # self._step_sequencer._nav_down_button = self._down_button
         # self._step_sequencer._nav_left_button = self._left_button
