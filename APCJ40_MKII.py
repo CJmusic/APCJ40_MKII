@@ -163,7 +163,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             self._skin = make_custom_skin() # is this working ?
             self._clip_creator = ClipCreator()
 
-            self._create_drum_component()
+            # self._create_drum_component()
             self._create_step_sequencer() 
 
             self._create_vu()
@@ -481,23 +481,23 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
 
-    def _create_drum_component(self):
-        self._drum_component = DrumGroupComponent(name='Drum_Group', is_enabled=False)
-        self._drum_component.layer = Layer(
-            drum_matrix=self._session_matrix,
-            #    page_strip=self._touch_strip_control,
-            #    scroll_strip=self._with_shift(self._touch_strip_control),
-            #    solo_button=self._global_solo_button,
-            #select_button=self._metronome_button,
-            #    delete_button=self._delete_button,
-            scroll_page_up_button=self._up_button,
-            scroll_page_down_button=self._down_button,
-            #    quantize_button=self._quantize_button,
-            #    mute_button=self._global_mute_button,
-            shift_button = self._shift_button,
-            scroll_up_button=self._with_shift(self._up_button),
-            scroll_down_button=self._with_shift(self._down_button),
-            )
+    # def _create_drum_component(self):
+    #     self._drum_component = DrumGroupComponent(name='Drum_Group', is_enabled=False)
+    #     self._drum_component.layer = Layer(
+    #         drum_matrix=self._session_matrix,
+    #         #    page_strip=self._touch_strip_control,
+    #         #    scroll_strip=self._with_shift(self._touch_strip_control),
+    #         #    solo_button=self._global_solo_button,
+    #         #select_button=self._metronome_button,
+    #         #    delete_button=self._delete_button,
+    #         scroll_page_up_button=self._up_button,
+    #         scroll_page_down_button=self._down_button,
+    #         #    quantize_button=self._quantize_button,
+    #         #    mute_button=self._global_mute_button,
+    #         shift_button = self._shift_button,
+    #         scroll_up_button=self._with_shift(self._up_button),
+    #         scroll_down_button=self._with_shift(self._down_button),
+    #         )
 
     def _create_vu(self):
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
