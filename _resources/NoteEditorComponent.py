@@ -605,6 +605,8 @@ class NoteEditorComponent(CompoundComponent, Subject):
         return map(partial(self._modify_single_note, step_mute, time_step), notes)
 
     def _modify_single_note(self, step_mute, time_step, pitch, time, length, velocity, mute):
+    # def _modify_single_note(self, step_mute, time_step, note):
+
         """
         Return a modified version of the passed in note taking into
         account current modifiers. If the note is not within
@@ -615,6 +617,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         loop, so the resulting note may, in this case, jump between
         the beginning and the end.
         """
+        # pitch, time, length, velocity, mute = note(0),  note(1),  note(2),  note(3),  note(4)
         if time_step.includes_time(time):
             time = time_step.clamp(time, self._nudge_offset)
             if self._length_offset <= -time_step.length and length + self._length_offset < time_step.length:
