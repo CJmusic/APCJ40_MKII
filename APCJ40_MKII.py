@@ -422,25 +422,25 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer(self):
-        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, layer = Layer(
-            velocity_slider=self._velocity_slider,
-            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)#, layer = Layer(
+            # velocity_slider=self._velocity_slider,
+            # # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
 
 
-            # button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
-            # playhead=self._playhead,
+            # # button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            # # playhead=self._playhead,
 
-            quantization_buttons=self._stop_buttons,
-            shift_button=self._shift_button,
-            # loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
-            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
-            drum_bank_up_button=self._up_button,
-            drum_bank_down_button=self._down_button,
-            drum_bank_detail_up_button = self._with_shift(self._up_button),
-            drum_bank_detail_down_button = self._with_shift(self._down_button))
-)
+            # quantization_buttons=self._stop_buttons,
+            # shift_button=self._shift_button,
+            # # loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+            # # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            # drum_bank_up_button=self._up_button,
+            # drum_bank_down_button=self._down_button,
+            # drum_bank_detail_up_button = self._with_shift(self._up_button),
+            # drum_bank_detail_down_button = self._with_shift(self._down_button))
+# )
         # self._create_step_sequencer = StepSeqComponent()
         # self._step_sequencer._nav_up_button = self._up_button
         # self._step_sequencer._nav_down_button = self._down_button
@@ -549,11 +549,11 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._parent._matrix = self._session_matrix
 
 
-        self._vu = VUMeters(self, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
-                                                                                                                    _down_button = self._down_button,
-                                                                                                                    _left_button = self._left_button, 
-                                                                                                                    _right_button = self._right_button,
-                                                                                                                    _session_stop_buttons = self._stop_buttons))
+        self._vu = VUMeters(self)#, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
+        # _down_button = self._down_button,
+        # _left_button = self._left_button, 
+        # _right_button = self._right_button,
+        # _session_stop_buttons = self._stop_buttons))
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_track_stop_buttons = self._stop_buttons, _scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix)
         # self._vu.layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
@@ -610,12 +610,13 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode(u'session', [AddLayerMode(self._session, Layer())])
         self._matrix_modes.add_mode(u'VU', [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
+        _play_button = self._play_button,
         # up_button = self._up_button,
         # _down_button = self._down_button,
         # _left_button = self._left_button, 
         # _right_button = self._right_button,
         _session_stop_buttons = self._stop_buttons))])
-        self._matrix_modes.add_mode(u'user', [AddLayerMode(self._session, Layer(
+        self._matrix_modes.add_mode(u'sequencer', [AddLayerMode(self._step_sequencer, Layer(
             velocity_slider=self._velocity_slider,
             # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
@@ -640,7 +641,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
         # self._matrix_modes.add_mode('user', self._user_mode_layers())
 
-        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, sequencer_button=self._user_button, VU_button = self._with_shift(self._bank_button))
         # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
 
         self._on_matrix_mode_changed.subject = self._matrix_modes
