@@ -340,12 +340,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
     def _create_session(self):
 
-        def when_bank_on(button):
-            return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
-
         # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
         #                                         enable_skinning=True,
         #                                         layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
@@ -361,18 +355,18 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #                                                     scene_launch_buttons=self._scene_launch_buttons,
                                                             # clip_launch_buttons=self._session_matrix))
 
-        self._session.layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
-                                                            track_bank_right_button=when_bank_off(self._right_button),
-                                                            scene_bank_up_button=when_bank_off(self._up_button),
-                                                            scene_bank_down_button=when_bank_off(self._down_button),
-                                                            page_left_button=when_bank_on(self._left_button),
-                                                            page_right_button=when_bank_on(self._right_button),
-                                                            page_up_button=when_bank_on(self._up_button),
-                                                            page_down_button=when_bank_on(self._down_button),
-                                                            stop_track_clip_buttons=self._stop_buttons,
-                                                            stop_all_clips_button=self._stop_all_button,
-                                                            scene_launch_buttons=self._scene_launch_buttons,
-                                                            clip_launch_buttons=self._session_matrix)
+        # self._session.layer=Layer(track_bank_left_button=when_bank_off(self._left_button),
+        #                                                     track_bank_right_button=when_bank_off(self._right_button),
+        #                                                     scene_bank_up_button=when_bank_off(self._up_button),
+        #                                                     scene_bank_down_button=when_bank_off(self._down_button),
+        #                                                     page_left_button=when_bank_on(self._left_button),
+        #                                                     page_right_button=when_bank_on(self._right_button),
+        #                                                     page_up_button=when_bank_on(self._up_button),
+        #                                                     page_down_button=when_bank_on(self._down_button),
+        #                                                     stop_track_clip_buttons=self._stop_buttons,
+        #                                                     stop_all_clips_button=self._stop_all_button,
+        #                                                     scene_launch_buttons=self._scene_launch_buttons,
+        #                                                     clip_launch_buttons=self._session_matrix)
 
         clip_color_table = Colors.LIVE_COLORS_TO_MIDI_VALUES.copy()
         clip_color_table[16777215] = 119
@@ -595,6 +589,12 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
     def _create_matrix_modes(self):
 
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
         if self._implicit_arm:
             self._auto_arm = AutoArmComponent(name='Auto_Arm')
 
@@ -606,11 +606,33 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
 
         # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        self._matrix_modes.add_mode(u'sends', [AddLayerMode(self._session, Layer())])
-        self._matrix_modes.add_mode(u'session', [AddLayerMode(self._session, Layer())])
+        self._matrix_modes.add_mode(u'sends', [AddLayerMode(self._session, Layer(track_bank_left_button=when_bank_off(self._left_button),
+                                                            track_bank_right_button=when_bank_off(self._right_button),
+                                                            scene_bank_up_button=when_bank_off(self._up_button),
+                                                            scene_bank_down_button=when_bank_off(self._down_button),
+                                                            page_left_button=when_bank_on(self._left_button),
+                                                            page_right_button=when_bank_on(self._right_button),
+                                                            page_up_button=when_bank_on(self._up_button),
+                                                            page_down_button=when_bank_on(self._down_button),
+                                                            stop_track_clip_buttons=self._stop_buttons,
+                                                            stop_all_clips_button=self._stop_all_button,
+                                                            scene_launch_buttons=self._scene_launch_buttons,
+                                                            clip_launch_buttons=self._session_matrix))])
+        self._matrix_modes.add_mode(u'session', [AddLayerMode(self._session, Layer(track_bank_left_button=when_bank_off(self._left_button),
+                                                            track_bank_right_button=when_bank_off(self._right_button),
+                                                            scene_bank_up_button=when_bank_off(self._up_button),
+                                                            scene_bank_down_button=when_bank_off(self._down_button),
+                                                            page_left_button=when_bank_on(self._left_button),
+                                                            page_right_button=when_bank_on(self._right_button),
+                                                            page_up_button=when_bank_on(self._up_button),
+                                                            page_down_button=when_bank_on(self._down_button),
+                                                            stop_track_clip_buttons=self._stop_buttons,
+                                                            stop_all_clips_button=self._stop_all_button,
+                                                            scene_launch_buttons=self._scene_launch_buttons,
+                                                            clip_launch_buttons=self._session_matrix))])
         self._matrix_modes.add_mode(u'VU', [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
-        _play_button = self._play_button,
+        # _play_button = self._play_button,
         # up_button = self._up_button,
         # _down_button = self._down_button,
         # _left_button = self._left_button, 
@@ -623,7 +645,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
 
 
-            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
             # playhead=self._playhead,
 
             quantization_buttons=self._stop_buttons,

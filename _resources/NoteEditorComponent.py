@@ -232,8 +232,8 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 #button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS[0])
 
 
-        for task in self._step_tap_tasks.itervalues():
-            task.kill()
+        # for task in self._step_tap_tasks.items():
+        #     task.kill()
 
         def trigger_modification_task(x, y):
             trigger = partial(self._trigger_modification, (x, y), done=True)
