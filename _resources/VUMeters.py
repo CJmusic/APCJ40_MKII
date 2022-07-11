@@ -140,14 +140,14 @@ class VUMeters(ControlSurfaceComponent):
         self._connected = False
         self._session_offset = 0
         self._enabled = True
-        self.up_button = self._parent._up_button
-        self.down_button = self._parent._down_button
-        self.left_button = self._parent._left_button
-        self.right_button = self._parent._right_button
+        # self.up_button = self._parent._up_button
+        # self.down_button = self._parent._down_button
+        # self.left_button = self._parent._left_button
+        # self.right_button = self._parent._right_button
         self.session_stop_buttons = self._parent._stop_buttons
 
 
-        self._setup_session_control()
+        # self._setup_session_control()
 
         for row_index in range(CLIP_GRID_Y):
           row = self._parent._button_rows[row_index]

@@ -165,9 +165,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
             # self._create_drum_component()
             self._create_step_sequencer() 
-
-            self._create_vu()
             self._create_session() # runs this twice to start in session mode, need to fix this 
+            self._create_vu()
             self._session.set_mixer(self._mixer)
 
             self._create_matrix_modes()
@@ -330,6 +329,9 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
     def _create_session(self):
+        self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+                                                enable_skinning=True)
+
 
         # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
         #                                         enable_skinning=True,
@@ -511,9 +513,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     #         )
 
     def _create_vu(self):
-        self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
-                                                enable_skinning=True)
-
 
         # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
         #                                         enable_skinning=True,
@@ -557,8 +556,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
         # THIS IS REALLY JANK 
         self._shift_button.add_value_listener(self._shift_value)
-        self._right_button.add_value_listener(self._shift_value)
-        self._left_button.add_value_listener(self._shift_value)
+        # self._right_button.add_value_listener(self._shift_value)
+        # self._left_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
@@ -639,12 +638,26 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     #     return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
         return [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
-        _up_button = self._up_button,
-        _down_button = self._down_button,
-        _left_button = self._left_button, 
-        _right_button = self._right_button,
+        track_bank_left_button=when_bank_off(self._left_button),
+        track_bank_right_button=when_bank_off(self._right_button),
+        scene_bank_up_button=when_bank_off(self._up_button),
+        scene_bank_down_button=when_bank_off(self._down_button),
+        page_left_button=when_bank_on(self._left_button),
+        page_right_button=when_bank_on(self._right_button),
+        page_up_button=when_bank_on(self._up_button),
+        page_down_button=when_bank_on(self._down_button),
+        stop_track_clip_buttons=self._stop_buttons,
+        stop_all_clips_button=self._stop_all_button,
+        scene_launch_buttons=self._scene_launch_buttons,
+        clip_launch_buttons=self._session_matrix,
         _session_stop_buttons = self._stop_buttons))]
     # def _vu_mode_layers(self):
 
