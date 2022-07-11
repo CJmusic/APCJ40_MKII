@@ -644,6 +644,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         def when_bank_off(button):
             return self._bank_toggle.create_toggle_element(off_control=button)
 
+        self._update_vu_meters()
+
         return [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
         track_bank_left_button=when_bank_off(self._left_button),
