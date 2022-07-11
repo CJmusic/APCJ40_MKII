@@ -301,17 +301,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
          [ self._with_shift(button) for button in self._scene_launch_buttons_raw
          ]])
 
-        self._grid_resolution = GridResolution()
-        # self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
-        self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
-        # self._velocity_slider.resource_type = PrioritizedResource
-        double_press_rows = recursive_map(DoublePressElement, self._matrix_rows_raw)
-        self._double_press_matrix = ButtonMatrixElement(name='Double_Press_Matrix', rows=double_press_rows)
-        self._double_press_event_matrix = ButtonMatrixElement(name='Double_Press_Event_Matrix',
-                                                              rows=recursive_map(lambda x: x.double_press,
-                                                                                 double_press_rows))
 
-        self._playhead = PlayheadElement(self._c_instance.playhead)
+        # self._playhead = PlayheadElement(self._c_instance.playhead)
 
 
     def _create_bank_toggle(self):
@@ -416,6 +407,16 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer(self):
+        self._grid_resolution = GridResolution()
+        # self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
+        self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
+        self._velocity_slider.resource_type = PrioritizedResource
+        double_press_rows = recursive_map(DoublePressElement, self._matrix_rows_raw)
+        self._double_press_matrix = ButtonMatrixElement(name='Double_Press_Matrix', rows=double_press_rows)
+        self._double_press_event_matrix = ButtonMatrixElement(name='Double_Press_Event_Matrix',
+                                                              rows=recursive_map(lambda x: x.double_press,
+                                                                                 double_press_rows))
+
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)#, layer = Layer(
             # velocity_slider=self._velocity_slider,
             # # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
@@ -513,11 +514,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
                                                 enable_skinning=True)
 
-        def when_bank_on(button):
-            return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
 
         # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
         #                                         enable_skinning=True,
