@@ -374,9 +374,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._follow_task.kill()
 
     @subject_slot('value')
-    # def _on_short_loop_selector_matrix_value(self, value, x, y, is_momentary):
-    def _on_short_loop_selector_matrix_value(self, value, pos, is_momentary):
-        x, y = pos(0), pos(1)
+    def _on_short_loop_selector_matrix_value(self, value, x, y, is_momentary):
+    # def _on_short_loop_selector_matrix_value(self, value, pos, is_momentary):
+        # x, y = pos(0), pos(1)
         page = x + y * self._short_loop_selector_matrix.width()
         if self.is_enabled():
             if value or not is_momentary:
@@ -385,9 +385,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 self._pressed_pages = []
 
     @subject_slot('value')
-    # def _on_loop_selector_matrix_value(self, value, x, y, is_momentary):
-    def _on_loop_selector_matrix_value(self, value, pos, is_momentary):
-        x, y = pos(0), pos(2)
+    def _on_loop_selector_matrix_value(self, value, x, y, is_momentary):
+    # def _on_loop_selector_matrix_value(self, value, pos, is_momentary):
+        # x, y = pos(0), pos(2)
         page = x + y * self._loop_selector_matrix.width()
         if self.is_enabled():
             if value or not is_momentary:
