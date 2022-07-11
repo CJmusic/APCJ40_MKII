@@ -304,7 +304,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._grid_resolution = GridResolution()
         # self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
         self._velocity_slider = ButtonSliderElement(tuple(self._scene_launch_buttons_raw[::-1]))
-        self._velocity_slider.resource_type = PrioritizedResource
+        # self._velocity_slider.resource_type = PrioritizedResource
         double_press_rows = recursive_map(DoublePressElement, self._matrix_rows_raw)
         self._double_press_matrix = ButtonMatrixElement(name='Double_Press_Matrix', rows=double_press_rows)
         self._double_press_event_matrix = ButtonMatrixElement(name='Double_Press_Event_Matrix',
