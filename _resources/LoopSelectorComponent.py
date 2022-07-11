@@ -1,6 +1,8 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/LoopSelectorComponent.py
+
 from __future__ import with_statement
 from functools import partial
+import sys
 from _Framework import Task
 from _Framework import Defaults
 from _Framework.Control import ButtonControl
@@ -9,7 +11,6 @@ from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.Util import contextmanager, clamp
 from _Framework.ComboElement import DoublePressElement
 
-#from itertools import zip(
 
 def create_clip_in_selected_slot(creator, song, clip_length = None):
     """
@@ -98,6 +99,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._on_song_playback_status_changed.subject = self.song()
         if paginator is not None:
             self.set_paginator(paginator)
+        
 
     @property
     def playing_position(self):
@@ -113,10 +115,14 @@ class LoopSelectorComponent(ControlSurfaceComponent):
     is_following = property(_get_is_following, _set_is_following)
 
     def set_paginator(self, paginator):
+        self.log('SET_PAGINATOR CALLED')
+        self.log(self._paginator)
         self._paginator = paginator or Paginator()
         self._on_page_index_changed.subject = paginator
         self._on_page_length_changed.subject = paginator
         self._update_page_colors()
+        self.log(self._paginator)
+
 
     @subject_slot('page_index')
     def _on_page_index_changed(self):
@@ -208,9 +214,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
     @subject_slot('playing_position')
     def _on_playing_position_changed(self):
-        #self._update_page_and_playhead_leds()
-        #self._update_page_selection()
-        self.notify_playing_position()
+        # self._update_page_and_playhead_leds()
+        # self._update_page_selection()
+        self.notify_playing_position() # Changed back CJ 2021-11-29
 
     @subject_slot('playing_status')
     def _on_playing_status_changed(self):
@@ -233,7 +239,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._paginator.select_page_in_point(position)
 
     def _update_page_and_playhead_leds(self):
-
+        self.log('UPDATE PAGE AND PLAYHEAD LEDS CALLED')
         @contextmanager
         def save_page_color(page_colors, page):
             old_page_value = page_colors[page]
@@ -253,7 +259,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._position = self._sequencer_clip.playing_position
             visible_page = int(self._position / self._page_length_in_beats) - self.page_offset
             page_colors = self._page_colors
-            if 0 <= visible_page < len(page_colors):
+            if 0 <= visible_page < len(list(page_colors)):
                 with save_page_color(page_colors, visible_page):
                     if self.song().is_playing:
                         page_colors[visible_page] = 'LoopSelector.PlayheadRecord' if self.song().session_record else 'LoopSelector.Playhead'
@@ -301,17 +307,15 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 else:
                     return 'LoopSelector.OutsideLoop'
 
-            # return map(color_for_page, xrange(page_offset, page_offset + size))
             return map(color_for_page, range(page_offset, page_offset + size))
 
-
         def mark_selected_pages(page_colors):
-            # for page_index in xrange(*self._selected_pages_range()):
-            page_colors = list(page_colors) #ADDED
             for page_index in range(*self._selected_pages_range()):
                 button_index = page_index - self.page_offset
+                page_colors = list(page_colors)
                 if page_colors[button_index].startswith('LoopSelector.InsideLoop'):
                     page_colors[button_index] = 'LoopSelector.SelectedPage'
+                # page_colors = map(page_colors)
 
         page_colors = calculate_page_colors()
         mark_selected_pages(page_colors)
@@ -319,16 +323,21 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._update_page_and_playhead_leds()
 
     def _update_page_leds(self):
+        self.log('UPDATE LIGHTS CALLED')
         self._update_page_leds_in_matrix(self._loop_selector_matrix)
         self._update_page_leds_in_matrix(self._short_loop_selector_matrix)
 
     def _update_page_leds_in_matrix(self, matrix):
+        self.log('UPDATE LIGHTS IN MATRIX CALLED')
+
         """ update hardware leds to match precomputed map """
+        # if matrix:
         if self.is_enabled() and matrix:
             for button, color in zip(matrix, self._page_colors):
                 if button and (color == 'LoopSelector.Playhead' or color == 'LoopSelector.OutsideLoop' or isinstance(button, DoublePressElement)):
                     if color == 'LoopSelector.Playhead' or (not hasattr(button, '_skin_name') or button._skin_name == 'NoteEditor.StepEmpty'):
                         button.set_light(color)
+                        self.log('LIGHTS UPDATING IN MATRIX')
 
     def _jump_to_page(self, next_page):
         start, length = self._get_loop_in_pages()
@@ -365,9 +374,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._follow_task.kill()
 
     @subject_slot('value')
-    # def _on_short_loop_selector_matrix_value(self, value, x, y, is_momentary):
-    def _on_short_loop_selector_matrix_value(self, value, note, is_momentary):
-        x, y = note(0), note(1)
+    def _on_short_loop_selector_matrix_value(self, value, x, y, is_momentary):
         page = x + y * self._short_loop_selector_matrix.width()
         if self.is_enabled():
             if value or not is_momentary:
@@ -376,9 +383,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 self._pressed_pages = []
 
     @subject_slot('value')
-    # def _on_loop_selector_matrix_value(self, value, x, y, is_momentary):
-    def _on_loop_selector_matrix_value(self, value, note, is_momentary):
-        x, y = note(0), note(1)
+    def _on_loop_selector_matrix_value(self, value, x, y, is_momentary):
         page = x + y * self._loop_selector_matrix.width()
         if self.is_enabled():
             if value or not is_momentary:
@@ -483,3 +488,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             if self._can_follow:
                 self.is_following = not self.is_following
                 self._update_follow_button()
+
+    def log(self, message):
+        pass
+        # sys.stderr.write("LOG: " + message.encode("utf-8"))

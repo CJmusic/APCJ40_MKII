@@ -1,7 +1,7 @@
 #Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/NoteEditorComponent.py
 from __future__ import with_statement
 from functools import partial
-#from itertools import chain, imap, ifilter
+from itertools import chain
 from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.Util import sign, product, in_range, clamp, forward_property, first
@@ -30,7 +30,12 @@ def color_for_note(note):
 
 
 def most_significant_note(notes):
+    # if notes:    
     return max(notes, key=lambda n: n[3])
+    # else:
+        # return notes
+
+        
 
 
 MAX_CLIP_LENGTH = 100000000
@@ -73,7 +78,7 @@ class TimeStep(object):
             return step_end < note_end
 
     def filter_notes(self, notes):
-        return filter(self.includes_note, notes)
+        return list(filter(self.includes_note, notes))
 
     def clamp(self, time, extra_time = 0.0):
         return clamp(time + extra_time, self.left_boundary(), self.right_boundary())
@@ -232,16 +237,14 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 #button.set_channel(PLAYHEAD_FEEDBACK_CHANNELS[0])
 
 
-        # for task in self._step_tap_tasks.items():
-        #     task.kill()
+        for task in self._step_tap_tasks.values():
+            task.kill()
 
         def trigger_modification_task(x, y):
             trigger = partial(self._trigger_modification, (x, y), done=True)
             return self._tasks.add(Task.sequence(Task.wait(Defaults.MOMENTARY_DELAY), Task.run(trigger))).kill()
 
-        # self._step_tap_tasks = dict([ ((x, y), trigger_modification_task(x, y)) for x, y in product(xrange(self._width), xrange(self._height)) ])
         self._step_tap_tasks = dict([ ((x, y), trigger_modification_task(x, y)) for x, y in product(range(self._width), range(self._height)) ])
-
         if matrix and last_page_length != self.page_length:
             self._on_clip_notes_changed()
             self.notify_page_length()
@@ -267,7 +270,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         """ get notes from clip for offline array """
         if self._sequencer_clip and self._note_index != None:
             time_start, time_length = self._get_clip_notes_time_range()
-            self._clip_notes = self._sequencer_clip.get_notes(time_start, self._note_index, time_length, 1)
+            self._clip_notes = self._sequencer_clip.get_notes(time_start, int(self._note_index), time_length, 1)
         else:
             self._clip_notes = []
         self._update_editor_matrix()
@@ -280,14 +283,13 @@ class NoteEditorComponent(CompoundComponent, Subject):
         """
         step_colors = ['NoteEditor.StepDisabled'] * self._get_step_count()
         width = self._width
-        # coords_to_index = lambda (x, y): x + y * width
-        coords_to_index = lambda x, y: x + y * width
+        coords_to_index = lambda xy: xy[0] + xy[1] * width
         editing_indices = set(map(coords_to_index, self._modified_steps))
         selected_indices = set(map(coords_to_index, self._pressed_steps))
         last_editing_notes = []
         for time_step, index in self._visible_steps():
             notes = time_step.filter_notes(self._clip_notes)
-            if len(notes) > 0:
+            if len(list(notes)) > 0:
                 last_editing_notes = []
                 if index in selected_indices:
                     color = 'NoteEditor.StepSelected'
@@ -323,7 +325,6 @@ class NoteEditorComponent(CompoundComponent, Subject):
     def _update_editor_matrix_leds(self):
         """ update hardware LEDS to match offline array values """
         if self.is_enabled() and self._matrix:
-            # for row, col in product(xrange(self._height), xrange(self._width)):
             for row, col in product(range(self._height), range(self._width)):
                 index = row * self._width + col
                 color = self._step_colors[index]
@@ -336,9 +337,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
     def _get_step_count(self):
         return self._width * self._height
 
-    # def _get_step_start_time(self, x, y):
-    def _get_step_start_time(self, note):
-        x, y = note(0), note(1)
+    def _get_step_start_time(self, x, y):
         """ returns step starttime in beats, based on step coordinates """
         if not (in_range(x, 0, self._width)):
             raise AssertionError
@@ -384,13 +383,11 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 width = self._width * self._triplet_factor if self._is_triplet_quantization() else self._width
                 if x < width and y < self._height:
                     if value or not is_momentary:
-                        pos = (x,y)
-                        # self._on_press_step((x, y))
-                        self._on_press_step(pos)
+                        # xy = (x, y)
+                        self._on_press_step(x,y)
                     else:
-                        # self._on_release_step((x, y))
-                        pos = (x,y)
-                        self._on_release_step(pos)
+                        # xy = (x, y)
+                        self._on_release_step(x,y)
                     self._update_editor_matrix()
 
     @subject_slot('value')
@@ -400,9 +397,9 @@ class NoteEditorComponent(CompoundComponent, Subject):
     @property
     def active_steps(self):
 
-        # def get_time_range((x, y)):
-        def get_time_range(pos):
-            x, y = pos(0), pos(1)
+        def get_time_range(xy):
+            x= xy[0]
+            y = xy[1]
             time = self._get_step_start_time(x, y)
             return (time, time + self._get_step_length())
 
@@ -412,18 +409,20 @@ class NoteEditorComponent(CompoundComponent, Subject):
         for step in self._pressed_steps + self._modified_steps:
             self._on_release_step(step, do_delete_notes=False)
 
-    def _on_release_step(self, step, do_delete_notes = True):
+    def _on_release_step(self, x,y, do_delete_notes = True):
+        step = (x,y)
         self._step_tap_tasks[step].kill()
         if step in self._pressed_steps:
             if do_delete_notes:
-                self._delete_notes_in_step(step)
+                self._delete_notes_in_step(x,y)
             self._pressed_steps.remove(step)
             self._add_note_in_step(step)
         if step in self._modified_steps:
             self._modified_steps.remove(step)
         self.notify_active_steps()
 
-    def _on_press_step(self, step):
+    def _on_press_step(self, x, y):
+        step = (x,y)
         if self._sequencer_clip != None and step not in self._pressed_steps and step not in self._modified_steps:
             self._step_tap_tasks[step].restart()
             self._pressed_steps.append(step)
@@ -440,13 +439,15 @@ class NoteEditorComponent(CompoundComponent, Subject):
         Add note in given step if there are none in there, otherwise
         select the step for potential deletion or modification
         """
+        # step = (x,y)
         if self._sequencer_clip != None:
             x, y = step
             time = self._get_step_start_time(x, y)
             notes = self._time_step(time).filter_notes(self._clip_notes)
-            if notes:
+            # if notes:
+            if len(notes) > 0:
                 if modify_existing:
-                    most_significant_velocity = most_significant_note(notes)[3]
+                    most_significant_velocity =  most_significant_note(notes)[3]
                     if self._mute_button and self._mute_button.is_pressed() or most_significant_velocity != 127 and self.full_velocity:
                         self._trigger_modification(step, immediate=True)
             else:
@@ -456,24 +457,24 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 if self._velocity != None:
                     velocity = self._velocity
                 note = (pitch,
-                 time,
-                 self._get_step_length(),
-                 velocity,
-                 mute)
+                    time,
+                    self._get_step_length(),
+                    velocity,
+                    mute)
                 self._sequencer_clip.set_notes((note,))
                 self._sequencer_clip.deselect_all_notes()
                 self._trigger_modification(step, done=True)
                 return True
         return False
 
-    # def _delete_notes_in_step(self, (x, y)):
-    def _delete_notes_in_step(self, pos):
+    def _delete_notes_in_step(self, x, y):
+        step = (x,y)
         """ Delete all notes in the given step """
-        x, y = pos(0), pos(1)
         if self._sequencer_clip:
             time_step = self._time_step(self._get_step_start_time(x, y))
             for time, length in time_step.connected_time_ranges():
-                self._sequencer_clip.remove_notes(time, self._note_index, length, 1)
+                # self._sequencer_clip.remove_notes_extended(time, self._note_index, length, 1) # remove_notes deprecated
+                self._sequencer_clip.remove_notes_extended(int(self._note_index),1 , time, length) # remove_notes deprecated
 
 
     #added 10/17
@@ -603,9 +604,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         step_mute = all(map(lambda note: note[4], step_notes))
         return map(partial(self._modify_single_note, step_mute, time_step), notes)
 
-    # def _modify_single_note(self, step_mute, time_step, (pitch, time, length, velocity, mute)):
-    def _modify_single_note(self, step_mute, time_step, note):
-
+    def _modify_single_note(self, step_mute, time_step, pitch, time, length, velocity, mute):
         """
         Return a modified version of the passed in note taking into
         account current modifiers. If the note is not within
@@ -616,7 +615,6 @@ class NoteEditorComponent(CompoundComponent, Subject):
         loop, so the resulting note may, in this case, jump between
         the beginning and the end.
         """
-        pitch, time, length, velocity, mute = note(0), note(1), note(2), note(3), note(4)
         if time_step.includes_time(time):
             time = time_step.clamp(time, self._nudge_offset)
             if self._length_offset <= -time_step.length and length + self._length_offset < time_step.length:
