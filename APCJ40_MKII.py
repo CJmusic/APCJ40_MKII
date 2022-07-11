@@ -106,7 +106,7 @@ from ._resources.CustomSessionComponent import CustomSessionComponent
 from ._resources.ShiftableSelectorComponent import ShiftableSelectorComponent
 from ._resources.ConfigurableButtonElement import ConfigurableButtonElement 
 
-from ._resources.VUMeters import VUMeters
+# from ._resources.VUMeters import VUMeters
 
 
  
@@ -558,6 +558,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._shift_button.add_value_listener(self._shift_value)
         self._right_button.add_value_listener(self._shift_value)
         self._left_button.add_value_listener(self._shift_value)
+        self.add_value_listener(self._shift_value)
+        # self._with_shift(self._bank_button).add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
@@ -638,6 +640,17 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     #     return [self._session, self._view_control, self._session_zoom]#, self._mixer
 
     def _vu_mode_layers(self):
+        CLIP_GRID_X = 8
+        CLIP_GRID_Y = 5
+
+        LED_OFF = 0
+
+        for row_index in range(CLIP_GRID_Y):
+          row = self._parent._button_rows[row_index]
+          for button_index in range(CLIP_GRID_X):
+            button = row[button_index]
+            button.send_value(LED_OFF)
+
         def when_bank_on(button):
             return self._bank_toggle.create_toggle_element(on_control=button)
 
