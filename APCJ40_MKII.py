@@ -556,8 +556,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
         # THIS IS REALLY JANK 
         self._shift_button.add_value_listener(self._shift_value)
-        # self._right_button.add_value_listener(self._shift_value)
-        # self._left_button.add_value_listener(self._shift_value)
+        self._right_button.add_value_listener(self._shift_value)
+        self._left_button.add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
     def _shift_value(self,  value):
