@@ -549,7 +549,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._parent._matrix = self._session_matrix
 
 
-        self._vu = VUMeters(self)#, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
+        self._vu = VUMeters(self._parent)#, layer = Layer(_scene_launch_buttons = self._scene_launch_buttons, _matrix = self._session_matrix, up_button = self._up_button,
         # _down_button = self._down_button,
         # _left_button = self._left_button, 
         # _right_button = self._right_button,
