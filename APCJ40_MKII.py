@@ -585,11 +585,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
     def _create_matrix_modes(self):
 
-        def when_bank_on(button):
-            return self._bank_toggle.create_toggle_element(on_control=button)
-
-        def when_bank_off(button):
-            return self._bank_toggle.create_toggle_element(off_control=button)
 
         if self._implicit_arm:
             self._auto_arm = AutoArmComponent(name='Auto_Arm')
@@ -602,7 +597,31 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
 
         # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        self._matrix_modes.add_mode(u'sends', [AddLayerMode(self._session, Layer(track_bank_left_button=when_bank_off(self._left_button),
+        self._matrix_modes.add_mode(u'sends', self._session_mode_layers())
+        self._matrix_modes.add_mode(u'session', self._session_mode_layers())
+        self._matrix_modes.add_mode(u'VU', self._vu_mode_layers())
+        self._matrix_modes.add_mode(u'sequencer', self._sequencer_mode_layers())
+
+
+        # self._matrix_modes.add_mode('sends', self._session_mode_layers())
+        # self._matrix_modes.add_mode('session', self._session_mode_layers())
+        # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+        # self._matrix_modes.add_mode('user', self._user_mode_layers())
+
+        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, sequencer_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
+
+        self._on_matrix_mode_changed.subject = self._matrix_modes
+        self._matrix_modes.selected_mode = u'session'
+
+    def _session_mode_layers(self):
+        def when_bank_on(button):
+            return self._bank_toggle.create_toggle_element(on_control=button)
+
+        def when_bank_off(button):
+            return self._bank_toggle.create_toggle_element(off_control=button)
+
+        return [AddLayerMode(self._session, Layer(track_bank_left_button=when_bank_off(self._left_button),
                                                             track_bank_right_button=when_bank_off(self._right_button),
                                                             scene_bank_up_button=when_bank_off(self._up_button),
                                                             scene_bank_down_button=when_bank_off(self._down_button),
@@ -613,27 +632,35 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
                                                             stop_track_clip_buttons=self._stop_buttons,
                                                             stop_all_clips_button=self._stop_all_button,
                                                             scene_launch_buttons=self._scene_launch_buttons,
-                                                            clip_launch_buttons=self._session_matrix))])
-        self._matrix_modes.add_mode(u'session', [AddLayerMode(self._session, Layer(track_bank_left_button=when_bank_off(self._left_button),
-                                                            track_bank_right_button=when_bank_off(self._right_button),
-                                                            scene_bank_up_button=when_bank_off(self._up_button),
-                                                            scene_bank_down_button=when_bank_off(self._down_button),
-                                                            page_left_button=when_bank_on(self._left_button),
-                                                            page_right_button=when_bank_on(self._right_button),
-                                                            page_up_button=when_bank_on(self._up_button),
-                                                            page_down_button=when_bank_on(self._down_button),
-                                                            stop_track_clip_buttons=self._stop_buttons,
-                                                            stop_all_clips_button=self._stop_all_button,
-                                                            scene_launch_buttons=self._scene_launch_buttons,
-                                                            clip_launch_buttons=self._session_matrix))])
-        self._matrix_modes.add_mode(u'VU', [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
+                                                            clip_launch_buttons=self._session_matrix))]
+    # def _session_mode_layers(self):
+    #     self._vu.disconnect()
+    #     self._vu.disable()
+    #     return [self._session, self._view_control, self._session_zoom]#, self._mixer
+
+    def _vu_mode_layers(self):
+        return [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
         _up_button = self._up_button,
         _down_button = self._down_button,
         _left_button = self._left_button, 
         _right_button = self._right_button,
-        _session_stop_buttons = self._stop_buttons))])
-        self._matrix_modes.add_mode(u'sequencer', [AddLayerMode(self._step_sequencer, Layer(
+        _session_stop_buttons = self._stop_buttons))]
+    # def _vu_mode_layers(self):
+
+    #     # self._session.set_enabled(False)
+    #     # self._session_zoom._on_zoom_value(1) #zoom out
+    #     # self._session_zoom.set_enabled(True)
+    #     # self._session_zoom._is_zoomed_out = False
+    #     # self._session_zoom.set_zoom_button(self._parent._shift_button)
+    #     # self._session_zoom.update()
+
+    #     self._update_vu_meters()
+    #     return [self._session, self._view_control, self._session_zoom]
+        # return [self._vu, self._view_control, self._session_zoom]
+
+    def _sequencer_mode_layers(self):
+        return [AddLayerMode(self._step_sequencer, Layer(
             velocity_slider=self._velocity_slider,
             # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
@@ -650,60 +677,27 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button,
             drum_bank_detail_up_button = self._with_shift(self._up_button),
-            drum_bank_detail_down_button = self._with_shift(self._down_button)))])
+            drum_bank_detail_down_button = self._with_shift(self._down_button)))]
+    
+    # def _user_mode_layers(self): 
+    #     # self._drum_group_finder = DrumGroupFinderComponent()
+    #     # self._on_drum_group_changed.subject = self._drum_group_finder
+    #     # self._session.set_enabled(False)
+    #     # self.reset_controlled_track()
 
+    #     # self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
+    #     # self._drum_modes.add_mode('sequencer', self._step_sequencer)
+    #     # #self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
 
-        # self._matrix_modes.add_mode('sends', self._session_mode_layers())
-        # self._matrix_modes.add_mode('session', self._session_mode_layers())
-        # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
-        # self._matrix_modes.add_mode('user', self._user_mode_layers())
+    #     # self._drum_modes.selected_mode = 'sequencer'
 
-        self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, sequencer_button=self._user_button, VU_button = self._with_shift(self._bank_button))
-        # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
+    #     #self._user_modes = ModesComponent(name='User_Modes', is_enabled=False)
+    #     #self._user_modes.add_mode('drums', [self._drum_modes])
+    #     #self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
+    #     #self._user_modes.selected_mode = 'drums'
 
-        self._on_matrix_mode_changed.subject = self._matrix_modes
-        self._matrix_modes.selected_mode = u'session'
-
-
-    def _session_mode_layers(self):
-        self._vu.disconnect()
-        self._vu.disable()
-        return [self._session, self._view_control, self._session_zoom]#, self._mixer
-
-    def _vu_mode_layers(self):
-
-        # self._session.set_enabled(False)
-        # self._session_zoom._on_zoom_value(1) #zoom out
-        # self._session_zoom.set_enabled(True)
-        # self._session_zoom._is_zoomed_out = False
-        # self._session_zoom.set_zoom_button(self._parent._shift_button)
-        # self._session_zoom.update()
-
-        self._update_vu_meters()
-        return [self._session, self._view_control, self._session_zoom]
-        # return [self._vu, self._view_control, self._session_zoom]
-
-
-
-    def _user_mode_layers(self): 
-        # self._drum_group_finder = DrumGroupFinderComponent()
-        # self._on_drum_group_changed.subject = self._drum_group_finder
-        # self._session.set_enabled(False)
-        # self.reset_controlled_track()
-
-        # self._drum_modes = ModesComponent(name='Drum_Modes', is_enabled=False)
-        # self._drum_modes.add_mode('sequencer', self._step_sequencer)
-        # #self._drum_modes.add_mode('64pads', self._drum_component)  # added 15:18 subday 22/10/17     can maybe look into this. causes issues when trying to scroll.(drumcomp1)
-
-        # self._drum_modes.selected_mode = 'sequencer'
-
-        #self._user_modes = ModesComponent(name='User_Modes', is_enabled=False)
-        #self._user_modes.add_mode('drums', [self._drum_modes])
-        #self._user_modes.add_mode('instrument', [self._note_repeat_enabler, self._instrument])
-        #self._user_modes.selected_mode = 'drums'
-
-        # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
-        return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
+    #     # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
+    #     return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
         # return [self._step_sequencer, None, None]  # , self._mixer
 
 
