@@ -424,14 +424,47 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     def _create_step_sequencer(self):
         # self._matrix_background.set_enabled(False)
         # self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
-        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution)
+        self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, layer = Layer(
+            velocity_slider=self._velocity_slider,
+            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._double_press_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
+            # [4, 1:5],  mess with this for possible future 32 pad drum rack :
+
+            # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
+            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            # button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+
+            #  next_page_button = self._bank_button,
+
+            #select_button=self._user_button,
+            # delete_button=self._stop_all_button,
+
+            # playhead=self._playhead,
+
+            quantization_buttons=self._stop_buttons,
+            shift_button=self._shift_button,
+            # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
+            loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+            # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
+            # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
+            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
+            # changed from [:8, :1] no change noticed as of yet
+            drum_bank_up_button=self._up_button,
+            drum_bank_down_button=self._down_button,
+            drum_bank_detail_up_button = self._with_shift(self._up_button),
+            drum_bank_detail_down_button = self._with_shift(self._down_button))
+)
         # self._create_step_sequencer = StepSeqComponent()
         # self._step_sequencer._nav_up_button = self._up_button
         # self._step_sequencer._nav_down_button = self._down_button
         # self._step_sequencer._nav_left_button = self._left_button
         # self._step_sequencer._nav_right_button = self._right_button
 
-        self._step_sequencer.layer = self._create_step_sequencer_layer()
+        # self._step_sequencer.layer = self._create_step_sequencer_layer()
         # self._step_sequencer.set_next_loop_page_button = self._right_button
         # self._step_sequencer.set_prev_loop_page_button = self._left_button
 
@@ -460,9 +493,9 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             #  next_page_button = self._bank_button,
 
             #select_button=self._user_button,
-            delete_button=self._stop_all_button,
+            # delete_button=self._stop_all_button,
 
-            playhead=self._playhead,
+            # playhead=self._playhead,
 
             quantization_buttons=self._stop_buttons,
             shift_button=self._shift_button,
@@ -591,6 +624,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode('user', self._user_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
+        # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
+
         self._on_matrix_mode_changed.subject = self._matrix_modes
         self._matrix_modes.selected_mode = u'session'
 
@@ -633,8 +668,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #self._user_modes.selected_mode = 'drums'
 
         # return [self._drum_modes, self._view_control, self._matrix_background]  # , self._mixer
-        # return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
-        return [self._step_sequencer, None, None]  # , self._mixer
+        return [self._step_sequencer, self._view_control, self._session_zoom]  # , self._mixer
+        # return [self._step_sequencer, None, None]  # , self._mixer
 
 
     @subject_slot('value')
