@@ -397,9 +397,8 @@ class NoteEditorComponent(CompoundComponent, Subject):
     @property
     def active_steps(self):
 
-        def get_time_range(xy):
-            x= xy[0]
-            y = xy[1]
+        def get_time_range(step):
+            x, y = step[0], step[1]
             time = self._get_step_start_time(x, y)
             return (time, time + self._get_step_length())
 
@@ -617,7 +616,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         loop, so the resulting note may, in this case, jump between
         the beginning and the end.
         """
-        pitch, time, length, velocity, mute = note(0), note(1), note(2), note(3), note(4)
+        pitch, time, length, velocity, mute = note[0], note[1], note[2], note[3], note[4]
         if time_step.includes_time(time):
             time = time_step.clamp(time, self._nudge_offset)
             if self._length_offset <= -time_step.length and length + self._length_offset < time_step.length:
