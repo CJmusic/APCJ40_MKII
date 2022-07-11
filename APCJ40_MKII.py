@@ -558,7 +558,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._shift_button.add_value_listener(self._shift_value)
         self._right_button.add_value_listener(self._shift_value)
         self._left_button.add_value_listener(self._shift_value)
-        self.add_value_listener(self._shift_value)
+        # self.add_value_listener(self._shift_value)
         # self._with_shift(self._bank_button).add_value_listener(self._shift_value)
         # self._vu._shift_button.add_value_listener(self._vu._shift_value)
 
