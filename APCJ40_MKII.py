@@ -422,37 +422,20 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
     def _create_step_sequencer(self):
-        # self._matrix_background.set_enabled(False)
-        # self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, playhead = self._playhead)
         self._step_sequencer = StepSeqComponent(grid_resolution=self._grid_resolution, layer = Layer(
             velocity_slider=self._velocity_slider,
             # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._double_press_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
-            # [4, 1:5],  mess with this for possible future 32 pad drum rack :
+            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
 
-            # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
-            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
-            # button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
 
-            #  next_page_button = self._bank_button,
-
-            #select_button=self._user_button,
-            # delete_button=self._stop_all_button,
-
+            # button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
             # playhead=self._playhead,
 
             quantization_buttons=self._stop_buttons,
             shift_button=self._shift_button,
-            # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
-            loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
-            # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
-            # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
-            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
-            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
-            # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
-            # changed from [:8, :1] no change noticed as of yet
+            # loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button,
             drum_bank_detail_up_button = self._with_shift(self._up_button),
@@ -477,40 +460,40 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._drum_step_sequencer = StepSeqComponent(self._clip_creator, self._skin, name=u'Drum_Step_Sequencer', grid_resolution=self._grid_resolution, instrument_component=self._drum_component, is_enabled=False)
 
 
-    def _create_step_sequencer_layer(self):
-        return Layer(
-            velocity_slider=self._velocity_slider,
-            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            drum_matrix=self._session_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._double_press_matrix.submatrix[:4, 1:5],
-            # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
-            # [4, 1:5],  mess with this for possible future 32 pad drum rack :
+    # def _create_step_sequencer_layer(self):
+    #     return Layer(
+    #         velocity_slider=self._velocity_slider,
+    #         # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+    #         drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+    #         # drum_matrix=self._double_press_matrix.submatrix[:4, 1:5],
+    #         # drum_matrix=self._session_matrix.submatrix[:4, 0:5],
+    #         # [4, 1:5],  mess with this for possible future 32 pad drum rack :
 
-            # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
-            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
-            # button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+    #         # button_matrix=self._double_press_matrix.submatrix[4:8, 0:4],  # [4:8, 1:5],
+    #         button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+    #         # button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
 
-            #  next_page_button = self._bank_button,
+    #         #  next_page_button = self._bank_button,
 
-            #select_button=self._user_button,
-            # delete_button=self._stop_all_button,
+    #         #select_button=self._user_button,
+    #         # delete_button=self._stop_all_button,
 
-            # playhead=self._playhead,
+    #         # playhead=self._playhead,
 
-            quantization_buttons=self._stop_buttons,
-            shift_button=self._shift_button,
-            # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
-            loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
-            # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
-            # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
-            # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
-            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
-            # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
-            # changed from [:8, :1] no change noticed as of yet
-            drum_bank_up_button=self._up_button,
-            drum_bank_down_button=self._down_button,
-            drum_bank_detail_up_button = self._with_shift(self._up_button),
-            drum_bank_detail_down_button = self._with_shift(self._down_button))
+    #         quantization_buttons=self._stop_buttons,
+    #         shift_button=self._shift_button,
+    #         # loop_selector_matrix=self._double_press_matrix.submatrix[4:8, 4],
+    #         loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+    #         # loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
+    #         # changed from [:8, :1] so as to enable bottem row of rack   . second value clip length rows
+    #         # short_loop_selector_matrix=self._double_press_event_matrix.submatrix[4:8, 4],
+    #         short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+    #         # short_loop_selector_matrix=self._session_matrix.submatrix[:8, :1],
+    #         # changed from [:8, :1] no change noticed as of yet
+    #         drum_bank_up_button=self._up_button,
+    #         drum_bank_down_button=self._down_button,
+    #         drum_bank_detail_up_button = self._with_shift(self._up_button),
+    #         drum_bank_detail_down_button = self._with_shift(self._down_button))
 
 
 
@@ -617,11 +600,45 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
         self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
         self._matrix_modes.default_behaviour = ImmediateBehaviour()
+
+        # self._encoder_mode.add_mode(u'pan', [AddLayerMode(self._mixer, Layer(pan_controls=self._mixer_encoders))])
+        # self._encoder_mode.add_mode(u'sends', [AddLayerMode(self._mixer, Layer(send_controls=self._mixer_encoders)), DelayMode(AddLayerMode(self._mixer, Layer(send_select_buttons=self._send_select_buttons)))])
+        # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
+
         # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
-        self._matrix_modes.add_mode('sends', self._session_mode_layers())
-        self._matrix_modes.add_mode('session', self._session_mode_layers())
-        self._matrix_modes.add_mode('VU', self._vu_mode_layers())
-        self._matrix_modes.add_mode('user', self._user_mode_layers())
+        self._matrix_modes.add_mode(u'sends', [AddLayerMode(self._session, Layer())])
+        self._matrix_modes.add_mode(u'session', [AddLayerMode(self._session, Layer())])
+        self._matrix_modes.add_mode(u'VU', [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
+        _matrix = self._session_matrix, 
+        # up_button = self._up_button,
+        # _down_button = self._down_button,
+        # _left_button = self._left_button, 
+        # _right_button = self._right_button,
+        _session_stop_buttons = self._stop_buttons))])
+        self._matrix_modes.add_mode(u'user', [AddLayerMode(self._session, Layer(
+            velocity_slider=self._velocity_slider,
+            # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
+
+
+            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            # playhead=self._playhead,
+
+            quantization_buttons=self._stop_buttons,
+            shift_button=self._shift_button,
+            loop_selector_matrix=self._double_press_matrix.submatrix[:8, :1],
+            short_loop_selector_matrix=self._double_press_event_matrix.submatrix[:8, :1],
+            drum_bank_up_button=self._up_button,
+            drum_bank_down_button=self._down_button,
+            drum_bank_detail_up_button = self._with_shift(self._up_button),
+            drum_bank_detail_down_button = self._with_shift(self._down_button)))])
+
+
+        # self._matrix_modes.add_mode('sends', self._session_mode_layers())
+        # self._matrix_modes.add_mode('session', self._session_mode_layers())
+        # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
+        # self._matrix_modes.add_mode('user', self._user_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, user_button=self._user_button, VU_button = self._with_shift(self._bank_button))
         # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
