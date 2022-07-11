@@ -628,11 +628,10 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
                                                             clip_launch_buttons=self._session_matrix))])
         self._matrix_modes.add_mode(u'VU', [AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         _matrix = self._session_matrix, 
-        # _play_button = self._play_button,
-        # up_button = self._up_button,
-        # _down_button = self._down_button,
-        # _left_button = self._left_button, 
-        # _right_button = self._right_button,
+        _up_button = self._up_button,
+        _down_button = self._down_button,
+        _left_button = self._left_button, 
+        _right_button = self._right_button,
         _session_stop_buttons = self._stop_buttons))])
         self._matrix_modes.add_mode(u'sequencer', [AddLayerMode(self._step_sequencer, Layer(
             velocity_slider=self._velocity_slider,
