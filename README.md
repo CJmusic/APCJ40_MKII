@@ -19,9 +19,11 @@ Known Bugs:
 
 - Velocity slider doesn't work (it doesn't play the note at that velocity, but it sequences it at it)
 - Pads are always lit upon disconnect, velocity slider pads always lit (issue is with the make_button command ControlElementUtils.py)
-- The loop selector isn't working
-- the Playhead isn't showing up
-- VU meters doesn't navigate around with sessions view (as a workaround you can press shift to "refresh" the VU meters tracks) 
+-VU meters doesn't zero out the session matrix when it's switched to
+
+Features to be added: 
+
+- Shift + User mode will become an instrument mode with scales and playable midi notes on the pads
 
 For installation instructions please visit: 
 https://help.ableton.com/hc/en-us/articles/209072009-Installing-third-party-remote-scripts
