@@ -2,7 +2,6 @@
 
 from __future__ import with_statement
 from functools import partial
-import sys
 from _Framework import Task
 from _Framework import Defaults
 from _Framework.Control import ButtonControl
@@ -10,6 +9,12 @@ from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.Util import contextmanager, clamp
 from _Framework.ComboElement import DoublePressElement
+
+try:
+    from itertools import izip as zip
+except ImportError: # will be 3.x series
+    pass
+
 
 
 def create_clip_in_selected_slot(creator, song, clip_length = None):
@@ -307,12 +312,14 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 else:
                     return 'LoopSelector.OutsideLoop'
 
-            return map(color_for_page, range(page_offset, page_offset + size))
+            # return map(color_for_page, range(page_offset, page_offset + size))
+            return [*map(color_for_page, range(page_offset, page_offset + size))]
+
 
         def mark_selected_pages(page_colors):
             for page_index in range(*self._selected_pages_range()):
                 button_index = page_index - self.page_offset
-                page_colors = list(page_colors)
+                # page_colors = list(page_colors)
                 if page_colors[button_index].startswith('LoopSelector.InsideLoop'):
                     page_colors[button_index] = 'LoopSelector.SelectedPage'
                 # page_colors = map(page_colors)
