@@ -198,11 +198,11 @@ class StepSeqComponent(CompoundComponent):
         self._skin = skin
         self._playhead_color = 'NoteEditor.Playhead'
 
-        self.log_message('INIT CUSTOMSTEPSEQ COMPLETE')
-        self.log_message(self._playhead)
-        self.log_message(self._playhead_component)
-        self.log_message(self._loop_selector)
-        self.log_message(self._big_loop_selector)
+        # self.log_message('INIT CUSTOMSTEPSEQ COMPLETE')
+        # self.log_message(self._playhead)
+        # self.log_message(self._playhead_component)
+        # self.log_message(self._loop_selector)
+        # self.log_message(self._big_loop_selector)
 
 
 

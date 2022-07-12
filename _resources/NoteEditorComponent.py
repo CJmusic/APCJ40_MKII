@@ -397,9 +397,8 @@ class NoteEditorComponent(CompoundComponent, Subject):
     @property
     def active_steps(self):
 
-        def get_time_range(xy):
-            x= xy[0]
-            y = xy[1]
+        def get_time_range(step):
+            x, y = step[0], step[1]
             time = self._get_step_start_time(x, y)
             return (time, time + self._get_step_length())
 
@@ -468,7 +467,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         return False
 
     def _delete_notes_in_step(self, x, y):
-        step = (x,y)
+        # step = (x,y)
         """ Delete all notes in the given step """
         if self._sequencer_clip:
             time_step = self._time_step(self._get_step_start_time(x, y))
@@ -604,7 +603,9 @@ class NoteEditorComponent(CompoundComponent, Subject):
         step_mute = all(map(lambda note: note[4], step_notes))
         return map(partial(self._modify_single_note, step_mute, time_step), notes)
 
-    def _modify_single_note(self, step_mute, time_step, pitch, time, length, velocity, mute):
+    # def _modify_single_note(self, step_mute, time_step, pitch, time, length, velocity, mute):
+    def _modify_single_note(self, step_mute, time_step, note):
+
         """
         Return a modified version of the passed in note taking into
         account current modifiers. If the note is not within
@@ -615,6 +616,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         loop, so the resulting note may, in this case, jump between
         the beginning and the end.
         """
+        pitch, time, length, velocity, mute = note[0], note[1], note[2], note[3], note[4]
         if time_step.includes_time(time):
             time = time_step.clamp(time, self._nudge_offset)
             if self._length_offset <= -time_step.length and length + self._length_offset < time_step.length:

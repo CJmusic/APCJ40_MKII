@@ -554,7 +554,8 @@ class InstrumentComponent(InstrumentComponent, Slideable):#, APCMessenger):
             pattern = self._pattern
             max_j = self._matrix.width() - 1
             # for button, (i, j) in APC40_MkIIxCJ(first, self._matrix.iterbuttons()):
-            for button, (i, j) in filter(first, self._matrix.iterbuttons()):
+            # for button, (i, j) in filter(first, self._matrix.iterbuttons()):
+            for button, i, j in filter(first, self._matrix.iterbuttons()):
                 profile = 'default' if self._takeover_pads else 'instrument'
                 button.sensitivity_profile = profile
                 note_info = pattern.note(i, max_j - j)

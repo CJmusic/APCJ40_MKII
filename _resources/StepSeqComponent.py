@@ -39,11 +39,11 @@ class StepSeqComponent(StepSeqComponent, APCMessenger):
         #self._drum_group.__class__ = APCDrumGroupComponent
         #self._note_editor.__class__ = APCNoteEditorComponent
         self._setup_drum_group_finder()
-        self._configure_playhead()
-        self.log_message('INIT STEPSEQ COMPLETE')
-        self.log_message(self._playhead)
-        self.log_message(self._playhead)
-        self.log_message(self._playhead)
+        # self._configure_playhead()
+        # self.log_message('INIT STEPSEQ COMPLETE')
+        # self.log_message(self._playhead)
+        # self.log_message(self._playhead)
+        # self.log_message(self._playhead)
 
     # lew onwards for next page button
 
