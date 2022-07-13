@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from functools import partial
 from contextlib import contextmanager
 import sys
-# import time
+import time
 
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.ComboElement import ComboElement, DoublePressElement, MultiElement, DoublePressContext
@@ -227,7 +227,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
         self._matrix_rows_raw = [ [ make_matrix_button(track, scene) for track in range(NUM_TRACKS) ] for scene in range(NUM_SCENES)
                                 ]
-        self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)
+        self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)#, resource_type=PrioritizedResource)
         self._pan_button = make_on_off_button(0, 87, name='Pan_Button', resource_type=PrioritizedResource)
         self._sends_button = make_on_off_button(0, 88, name='Sends_Button', resource_type=PrioritizedResource)
         self._user_button = make_on_off_button(0, 89, name='User_Button', resource_type = PrioritizedResource)
@@ -721,9 +721,12 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
 
 
         return [AddLayerMode(self._step_sequencer, Layer(
+            # _session_matrix = self._session_matrix,
             velocity_slider=self._velocity_slider,
             # drum_matrix=self._session_matrix.submatrix[:4, 1:5],
             drum_matrix=self._session_matrix.submatrix[:4, 1:5],
+            # drum_matrix=self._session_matrix[:4, 1:5],
+
             # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
 
 
@@ -798,13 +801,25 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         if mode!= 'VU':
             self._vu.disconnect()
             self._vu.disable() 
+    
+        if mode == 'session' or mode == 'sends':
+            # time.sleep(1)
+            # self._create_session()
+            self._step_sequencer.set_drum_matrix()
+            self.reset_controlled_track()
+            self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)#, resource_type=PrioritizedResource)
+
+            # self._session.set_clip_launch_buttons(self._session_matrix.submatrix[:4,1:5])
+            self._session.set_clip_launch_buttons(self._session_matrix)
+            # self._session = CustomSessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False,
+                                                # enable_skinning=True)
+
 
         self._shift_button.receive_value(127)
-        # time.sleep(1)
+        # time.sleep(0.1)
         self._shift_button.receive_value(0)
         # self._with_shift()
         # self.resetshift()
-        # self.reset_controlled_track()
         self._update_auto_arm(selected_mode=mode)
 
         self.reset_controlled_track()
@@ -833,7 +848,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         # self._vu.disable() 
         self._vu._on_track_offset_changed(self._session.track_offset())
         self._update_vu_meters()
-        self._matrix_modes._on_track_offset_changed()
+        # self._matrix_modes._on_track_offset_changed()
         # self._vu._session_offset = int(self._session_zoom._session.track_offset())
         # self._vu.observe( int(self._session_zoom._session.track_offset()) )
         # self._vu.observe( int(self._session.track_offset()))

@@ -8,6 +8,15 @@ from _Framework.Util import sign, product, in_range, clamp, forward_property, fi
 from _Framework import Task, Defaults
 from .LoopSelectorComponent import create_clip_in_selected_slot
 from .MatrixMaps import PAD_FEEDBACK_CHANNEL
+
+try:
+    from itertools import izip, imap, ifilter as zip, map, filter
+except ImportError: # will be 3.x series
+    pass
+
+
+
+
 DEFAULT_VELOCITY = 100
 BEAT_TIME_EPSILON = 1e-05
 
