@@ -265,7 +265,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._position = self._sequencer_clip.playing_position
             visible_page = int(self._position / self._page_length_in_beats) - self.page_offset
             page_colors = self._page_colors
-            if 0 <= visible_page < len(list(page_colors)):
+            # if 0 <= visible_page < len(list(page_colors)):
+            if 0 <= visible_page < len(page_colors):
                 with save_page_color(page_colors, visible_page):
                     if self.song().is_playing:
                         page_colors[visible_page] = 'LoopSelector.PlayheadRecord' if self.song().session_record else 'LoopSelector.Playhead'

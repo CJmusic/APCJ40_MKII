@@ -740,7 +740,11 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             drum_bank_up_button=self._up_button,
             drum_bank_down_button=self._down_button,
             drum_bank_detail_up_button = self._with_shift(self._up_button),
-            drum_bank_detail_down_button = self._with_shift(self._down_button)))]
+            drum_bank_detail_down_button = self._with_shift(self._down_button), 
+            next_loop_page_button = self._right_button,
+            prev_loop_page_button = self._left_button))
+            
+            ]
         #  , DelayMode(AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 
         # _matrix = self._session_matrix, 
         # track_bank_left_button=when_bank_off(self._left_button),
@@ -805,7 +809,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         if mode == 'session' or mode == 'sends':
             # time.sleep(1)
             # self._create_session()
-            self._step_sequencer.set_drum_matrix()
+            # self._step_sequencer.set_drum_matrix()
             self.reset_controlled_track()
             self._session_matrix = ButtonMatrixElement(rows=self._matrix_rows_raw)#, resource_type=PrioritizedResource)
 

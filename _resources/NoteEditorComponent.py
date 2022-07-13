@@ -87,7 +87,8 @@ class TimeStep(object):
             return step_end < note_end
 
     def filter_notes(self, notes):
-        return list(filter(self.includes_note, notes))
+        # return list(filter(self.includes_note, notes))
+        return [*filter(self.includes_note, notes)]
 
     def clamp(self, time, extra_time = 0.0):
         return clamp(time + extra_time, self.left_boundary(), self.right_boundary())
@@ -292,13 +293,15 @@ class NoteEditorComponent(CompoundComponent, Subject):
         """
         step_colors = ['NoteEditor.StepDisabled'] * self._get_step_count()
         width = self._width
-        coords_to_index = lambda xy: xy[0] + xy[1] * width
+        # coords_to_index = lambda xy: xy[0] + xy[1] * width
+        coords_to_index = lambda x, y: x + y * width
         editing_indices = set(map(coords_to_index, self._modified_steps))
         selected_indices = set(map(coords_to_index, self._pressed_steps))
         last_editing_notes = []
         for time_step, index in self._visible_steps():
             notes = time_step.filter_notes(self._clip_notes)
-            if len(list(notes)) > 0:
+            # if len(list(notes)) > 0:
+            if len(notes) > 0:
                 last_editing_notes = []
                 if index in selected_indices:
                     color = 'NoteEditor.StepSelected'
@@ -407,6 +410,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
     def active_steps(self):
 
         def get_time_range(step):
+        # def get_time_range(x, y):
             x, y = step[0], step[1]
             time = self._get_step_start_time(x, y)
             return (time, time + self._get_step_length())
