@@ -403,8 +403,12 @@ class NoteEditorSettingsComponent(ModesComponent):
     def _update_note_infos(self):
         if self.settings.is_enabled():
 
-            def min_max(l_min, l_max, r_min, r_max):
-                return (min(l_min, r_min), max(l_max, r_max))
+            # def min_max(l_min, l_max, r_min, r_max):
+            #     return (min(l_min, r_min), max(l_max, r_max))
+
+            def min_max(l, r):
+                return (min(l[0], r[0]), max(l[1], r[1]))
+
 
             all_min_max_attributes = filter(None, map(lambda e: e.get_min_max_note_values(), self._editors))
             min_max_values = [(99999, -99999)] * 4 if len(list(all_min_max_attributes)) > 0 else None
