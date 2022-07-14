@@ -2,10 +2,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from __future__ import division
 
-try:
-    from past.utils import old_div
-except ImportError: # will be 3.x series
-    pass
+# try:
+from past.utils import old_div
+# except ImportError: # will be 3.x series
+#     pass
 
 
 from _Framework.EncoderElement import EncoderElement
@@ -61,8 +61,8 @@ class RingedEncoderElement(EncoderElement):
             elif self._parameter_to_map_to != None:
                 param = self._parameter_to_map_to
                 p_range = param.max - param.min
-                # value = old_div(param.value - param.min, p_range) * 127
-                value = (param.value - param.min / p_range) * 127
+                value = old_div(param.value - param.min, p_range) * 127
+                # value = (param.value - param.min / p_range) * 127
                 self.send_value(int(value), force=True)
                 if self._parameter_to_map_to.min == -1 * self._parameter_to_map_to.max:
                     self._ring_mode_button.send_value(RING_PAN_VALUE, force=True)
