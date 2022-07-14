@@ -87,8 +87,8 @@ class TimeStep(object):
             return step_end < note_end
 
     def filter_notes(self, notes):
-        # return list(filter(self.includes_note, notes))
-        return [*filter(self.includes_note, notes)]
+        return list(filter(self.includes_note, notes))
+        # return [*filter(self.includes_note, notes)]
 
     def clamp(self, time, extra_time = 0.0):
         return clamp(time + extra_time, self.left_boundary(), self.right_boundary())
@@ -418,9 +418,9 @@ class NoteEditorComponent(CompoundComponent, Subject):
             time = self._get_step_start_time(x, y)
             return (time, time + self._get_step_length())
 
-        return [*map(get_time_range, chain(self._pressed_steps, self._modified_steps))]
-
+        # return [*map(get_time_range, chain(self._pressed_steps, self._modified_steps))]
         # return map(get_time_range, chain(self._pressed_steps, self._modified_steps))
+        return list(map(get_time_range, chain(self._pressed_steps, self._modified_steps)))
 
     def _release_active_steps(self):
         for step in self._pressed_steps + self._modified_steps:
@@ -619,7 +619,9 @@ class NoteEditorComponent(CompoundComponent, Subject):
     def _modify_notes_in_time(self, time_step, notes):
         step_notes = time_step.filter_notes(self._clip_notes)
         step_mute = all(map(lambda note: note[4], step_notes))
-        return [*map(partial(self._modify_single_note, step_mute, time_step), notes)]
+        # return [*map(partial(self._modify_single_note, step_mute, time_step), notes)]
+        return list(map(partial(self._modify_single_note, step_mute, time_step), notes))
+
 
     # def _modify_single_note(self, step_mute, time_step, pitch, time, length, velocity, mute):
     def _modify_single_note(self, step_mute, time_step, note):
