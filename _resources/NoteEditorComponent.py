@@ -490,8 +490,10 @@ class NoteEditorComponent(CompoundComponent, Subject):
         if self._sequencer_clip:
             time_step = self._time_step(self._get_step_start_time(x, y))
             for time, length in time_step.connected_time_ranges():
+                self._sequencer_clip.remove_notes(time, self._note_index, length, 1)
+
                 # self._sequencer_clip.remove_notes_extended(time, self._note_index, length, 1) # remove_notes deprecated
-                self._sequencer_clip.remove_notes_extended(int(self._note_index),1 , time, length) # remove_notes deprecated
+                # self._sequencer_clip.remove_notes_extended(int(self._note_index),1 , time, length) # remove_notes deprecated
 
 
     #added 10/17
