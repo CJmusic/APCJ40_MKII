@@ -730,7 +730,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             # drum_matrix=self._matrix_rows_raw.submatrix[:4, 1:5],
 
 
-            button_matrix=self._session_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
+            button_matrix=self._double_press_matrix.submatrix[4:8, 1:5],  # [4:8, 1:5],
             # playhead=self._playhead,
 
             quantization_buttons=self._stop_buttons,
@@ -742,7 +742,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
             drum_bank_detail_up_button = self._with_shift(self._up_button),
             drum_bank_detail_down_button = self._with_shift(self._down_button), 
             next_loop_page_button = self._right_button,
-            prev_loop_page_button = self._left_button))
+            prev_loop_page_button = self._left_button,
+            follow_button = self._bank_button))
             
             ]
         #  , DelayMode(AddLayerMode(self._session, Layer(_scene_launch_buttons = self._scene_launch_buttons, 

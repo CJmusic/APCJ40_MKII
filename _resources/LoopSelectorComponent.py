@@ -2,7 +2,7 @@
 
 from __future__ import with_statement
 from functools import partial
-import sys
+# import sys
 from _Framework import Task
 from _Framework import Defaults
 from _Framework.Control import ButtonControl
@@ -88,6 +88,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._loop_end = 0
         self._loop_length = 0
         self._is_following = False
+        # self._is_following = True
+
         self._follow_button = None
         self._select_button = None
         self._short_loop_selector_matrix = None
@@ -316,7 +318,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
             # return map(color_for_page, range(page_offset, page_offset + size))
             # if sys.version_info >= (3,0): 
-            return [*map(color_for_page, range(page_offset, page_offset + size))]
+            # return [*map(color_for_page, range(page_offset, page_offset + size))] ### THIS LINE MIGHT BE KEY
+            return list(map(color_for_page, range(page_offset, page_offset + size)))
+
             # else:
             # return map(color_for_page, range(page_offset, page_offset + size))
 
