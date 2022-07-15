@@ -8,8 +8,12 @@ from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework import Task, Defaults
 from _Framework.ScrollComponent import ScrollComponent, Scrollable
 # from . import consts
-import consts
+try:
+    import consts
+except ImportError: 
+    from . import consts
 
+    
 class ScrollableListItem(object):
     """
     Wrapper of an item of a scrollable list.
