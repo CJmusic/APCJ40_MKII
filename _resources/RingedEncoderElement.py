@@ -2,10 +2,11 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from __future__ import division
 
-# try:
-from past.utils import old_div
-# except ImportError: # will be 3.x series
-#     pass
+try:
+    from past.utils import old_div
+except ImportError: 
+    def old_div(x,y):
+        return x/y
 
 
 from _Framework.EncoderElement import EncoderElement
