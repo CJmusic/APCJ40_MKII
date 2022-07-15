@@ -8,6 +8,7 @@ from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework import Task, Defaults
 from _Framework.ScrollComponent import ScrollComponent, Scrollable
 # from . import consts
+import consts
 
 class ScrollableListItem(object):
     """
@@ -238,7 +239,9 @@ class DefaultItemFormatter(object):
         display_string = ''
         if item:
             display_string += consts.CHAR_SELECT if item.is_selected else ' '
-            display_string += self.action_message if action_in_progress else item
+            # display_string += self.action_message if action_in_progress else item
+            display_string += action_message if action_in_progress else str(item.content)
+
         return display_string
 
 
