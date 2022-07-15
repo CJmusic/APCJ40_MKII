@@ -280,8 +280,8 @@ class NoteEditorComponent(CompoundComponent, Subject):
         """ get notes from clip for offline array """
         if self._sequencer_clip and self._note_index != None:
             time_start, time_length = self._get_clip_notes_time_range()
-            # self._clip_notes = self._sequencer_clip.get_notes(time_start, int(self._note_index), time_length, 1)
-            self._clip_notes = self._sequencer_clip.get_notes(time_start, self._note_index, time_length, 1)
+            self._clip_notes = self._sequencer_clip.get_notes(time_start, int(self._note_index), time_length, 1)
+            # self._clip_notes = self._sequencer_clip.get_notes(time_start, self._note_index, time_length, 1)
 
         else:
             self._clip_notes = []
