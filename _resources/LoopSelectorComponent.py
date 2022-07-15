@@ -2,7 +2,7 @@
 
 from __future__ import with_statement
 from functools import partial
-import sys
+# import sys
 from _Framework import Task
 from _Framework import Defaults
 from _Framework.Control import ButtonControl
@@ -10,6 +10,12 @@ from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.Util import contextmanager, clamp
 from _Framework.ComboElement import DoublePressElement
+
+try:
+    from itertools import izip as zip
+except ImportError: # will be 3.x series
+    pass
+
 
 
 def create_clip_in_selected_slot(creator, song, clip_length = None):
@@ -82,6 +88,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         self._loop_end = 0
         self._loop_length = 0
         self._is_following = False
+        # self._is_following = True
+
         self._follow_button = None
         self._select_button = None
         self._short_loop_selector_matrix = None
@@ -259,7 +267,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._position = self._sequencer_clip.playing_position
             visible_page = int(self._position / self._page_length_in_beats) - self.page_offset
             page_colors = self._page_colors
-            if 0 <= visible_page < len(list(page_colors)):
+            # if 0 <= visible_page < len(list(page_colors)):
+            if 0 <= visible_page < len(page_colors):
                 with save_page_color(page_colors, visible_page):
                     if self.song().is_playing:
                         page_colors[visible_page] = 'LoopSelector.PlayheadRecord' if self.song().session_record else 'LoopSelector.Playhead'
@@ -307,12 +316,18 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 else:
                     return 'LoopSelector.OutsideLoop'
 
-            return map(color_for_page, range(page_offset, page_offset + size))
+            # return map(color_for_page, range(page_offset, page_offset + size))
+            # if sys.version_info >= (3,0): 
+            # return [*map(color_for_page, range(page_offset, page_offset + size))] ### THIS LINE MIGHT BE KEY
+            return list(map(color_for_page, range(page_offset, page_offset + size)))
+
+            # else:
+            # return map(color_for_page, range(page_offset, page_offset + size))
 
         def mark_selected_pages(page_colors):
             for page_index in range(*self._selected_pages_range()):
                 button_index = page_index - self.page_offset
-                page_colors = list(page_colors)
+                # page_colors = list(page_colors)
                 if page_colors[button_index].startswith('LoopSelector.InsideLoop'):
                     page_colors[button_index] = 'LoopSelector.SelectedPage'
                 # page_colors = map(page_colors)

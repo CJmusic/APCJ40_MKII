@@ -1,11 +1,18 @@
 # Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/python-bundle/MIDI Remote Scripts/APC40_MkIIxCJ/MixerComponent.py
 # Compiled at: 2018-04-23 20:27:04
 from __future__ import absolute_import, print_function, unicode_literals
-from itertools import zip_longest
 from _Framework.Control import RadioButtonControl, control_list
 from _Framework.Dependency import depends
 from _Framework.Util import nop
 from _APC.MixerComponent import MixerComponent as MixerComponentBase, ChanStripComponent as ChannelStripComponentBase
+
+try:
+    from itertools import izip_longest as zip_longest
+except ImportError: # will be 3.x series
+    from itertools import zip_longest
+    # pass
+
+
 
 class ChannelStripComponent(ChannelStripComponentBase):
 
