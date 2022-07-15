@@ -424,7 +424,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         #     octave_down_button=self._down_button,
         #     scale_up_button=self._with_shift(self._up_button),
         #     scale_down_button=self._with_shift(self._down_button))
-        self._instrument = InstrumentComponent()
+        self._instrument = InstrumentComponent(self)#, self._drum_group)
         # self._instrument._setup_instrument_mode()
 
         # self._instrument = MelodicComponent(skin=self._skin, is_enabled=False,
@@ -644,11 +644,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._matrix_modes = ModesComponent(name='Matrix_Modes', is_root=True)
         self._matrix_modes.default_behaviour = ImmediateBehaviour()
 
-        # self._encoder_mode.add_mode(u'pan', [AddLayerMode(self._mixer, Layer(pan_controls=self._mixer_encoders))])
-        # self._encoder_mode.add_mode(u'sends', [AddLayerMode(self._mixer, Layer(send_controls=self._mixer_encoders)), DelayMode(AddLayerMode(self._mixer, Layer(send_select_buttons=self._send_select_buttons)))])
-        # self._encoder_mode.add_mode(u'user', [AddLayerMode(self._mixer, Layer(user_controls=self._mixer_encoders))])
-
-        # self._matrix_modes.add_mode('disable', [self._matrix_background, self._background, self._mod_background])
         self._matrix_modes.add_mode(u'sends', self._session_mode_layers())
         self._matrix_modes.add_mode(u'session', self._session_mode_layers())
         self._matrix_modes.add_mode(u'VU', self._vu_mode_layers())
@@ -656,10 +651,6 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         self._matrix_modes.add_mode(u'inst', self._inst_mode_layers)
 
 
-        # self._matrix_modes.add_mode('sends', self._session_mode_layers())
-        # self._matrix_modes.add_mode('session', self._session_mode_layers())
-        # self._matrix_modes.add_mode('VU', self._vu_mode_layers())
-        # self._matrix_modes.add_mode('user', self._user_mode_layers())
 
         self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, sequencer_button=self._user_button, VU_button = self._with_shift(self._bank_button), inst_button = self._with_shift(self._user_button))
         # self._matrix_modes.layer = Layer(session_button=self._pan_button, sends_button=self._sends_button, VU_button = self._with_shift(self._bank_button))
@@ -671,7 +662,8 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
     def _inst_mode_layers(self):
         return [AddLayerMode(self._instrument, Layer(_matrix = self._session_matrix,
                                                     _octave_up_button = self._up_button,
-                                                    _octave_down_button = self._down_button))]
+                                                    _octave_down_button = self._down_button,
+                                                    velocity_slider = self._velocity_slider))]
 
 
 
