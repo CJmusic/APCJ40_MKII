@@ -419,7 +419,7 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         instrument_basic_layer = Layer(
             # octave_strip=self._with_shift(self._touch_strip_control),
             #   capture_button = self._tap_tempo_button,
-            #scales_toggle_button=self._metronome_button,
+            scales_toggle_button=self._bank_button,
             octave_up_button=self._up_button,
             octave_down_button=self._down_button,
             scale_up_button=self._with_shift(self._up_button),
@@ -431,27 +431,27 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
                                             clip_creator=self._clip_creator, name='Melodic_Component',
                                             grid_resolution=self._grid_resolution,
                                             note_editor_settings=self._add_note_editor_setting(),
-                                            layer=Layer(
-                                                # playhead=self._playhead,
-                                                velocity_slider=self._velocity_slider,
-                                                # mute_button=self._global_mute_button,
-                                                quantization_buttons=self._stop_buttons,
-                                                loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
-                                                short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
-                                                #note_editor_matrices=ButtonMatrixElement(
-                                                #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
-                                                note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]])),
-                                            instrument_play_layer=Layer(
-                                                octave_up_button=self._up_button,
-                                                octave_down_button=self._down_button,
-                                                scale_up_button=self._with_shift(self._up_button),
-                                                scale_down_button=self._with_shift(self._down_button),
-                                                matrix=self._session_matrix
-                                            ),
+                                            # layer=Layer(
+                                            #     # playhead=self._playhead,
+                                            velocity_slider=self._velocity_slider,
+                                            #     # mute_button=self._global_mute_button,
+                                                # quantization_buttons=self._stop_buttons,
+                                            #     loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
+                                            #     short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
+                                            #     #note_editor_matrices=ButtonMatrixElement(
+                                            #     #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
+                                            #     note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]])),
+                                            # instrument_play_layer=Layer(
+                                            octave_up_button=self._up_button,
+                                            octave_down_button=self._down_button,
+                                            scale_up_button=self._with_shift(self._up_button),
+                                            scale_down_button=self._with_shift(self._down_button),
+                                            matrix=self._session_matrix
+                                            # ),
                                             # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
                                             # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
                                             # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
-                                            instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
+                                            # instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)
                                             )
         # self._on_note_editor_layout_changed.subject = self._instrument
 
@@ -663,7 +663,27 @@ class APCJ40_MKII(APC, OptimizedControlSurface):
         return [AddLayerMode(self._instrument, Layer(_matrix = self._session_matrix,
                                                     _octave_up_button = self._up_button,
                                                     _octave_down_button = self._down_button,
-                                                    velocity_slider = self._velocity_slider))]
+                                                    velocity_slider = self._velocity_slider, 
+                                            #     # playhead=self._playhead,
+                                            # velocity_slider=self._velocity_slider,
+                                            #     # mute_button=self._global_mute_button,
+                                                # quantization_buttons=self._stop_buttons,
+                                            #     loop_selector_matrix=self._double_press_matrix.submatrix[0:8, 0],  # [:, 0]
+                                            #     short_loop_selector_matrix=self._double_press_event_matrix.submatrix[0:8, 0],  # [:, 0]
+                                            #     #note_editor_matrices=ButtonMatrixElement(
+                                            #     #    [[self._session_matrix.submatrix[:, 4 - row] for row in range(7)]]))
+                                            #     note_editor_matrices=ButtonMatrixElement([[ self._session_matrix.submatrix[:8, 4 - row] for row in range(4)]])),
+                                            # instrument_play_layer=Layer(
+                                            octave_up_button=self._up_button,
+                                            octave_down_button=self._down_button,
+                                            scale_up_button=self._with_shift(self._up_button),
+                                            scale_down_button=self._with_shift(self._down_button)))]
+                                            # matrix=self._session_matrix
+                                            # ),
+                                            # touch_strip=self._touch_strip_control, touch_strip_indication=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_control, modifiers=[self._select_button])),
+                                            # touch_strip_toggle=self._with_firmware_version(1, 16, ComboElement(self._touch_strip_tap, modifiers=[self._select_button])),
+                                            # aftertouch_control=self._aftertouch_control, delete_button=self._delete_button),
+                                            # instrument_sequence_layer=instrument_basic_layer  # + Layer(note_strip=self._touch_strip_control)))]
 
 
 
