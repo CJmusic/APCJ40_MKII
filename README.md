@@ -18,11 +18,11 @@ Planned Changes:
 - shift + bank turns on VU meters
 - user mode is a step sequencer con
 - shift + user mode will become an instrument mode with scales and playable midi notes on the pads s
-- Faders can be set to max out at 0 dB 
+- faders can be set to max out at 0 dB 
 
 For installation instructions please visit: 
 https://help.ableton.com/hc/en-us/articles/209072009-Installing-third-party-remote-scripts
-gi
+
 NOTE: When downloading the .zip file GitHub adds a "-master" suffix. Please remove this before installing the script, the remote script folder name should be "APCJ40_MKII". 
 
 Please contact chrisjosephsongs@gmail.com for any questions/suggestions/improvements! Subscribe to [youtube.com/c/chrisjosephyt](https://youtube.com/c/chrisjosephyt) for a Video tutorial once the Script is fully functional! 
