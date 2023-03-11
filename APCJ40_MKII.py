@@ -17,7 +17,7 @@ from _APC.DeviceComponent import DeviceComponent
 from _APC.DeviceBankButtonElement import DeviceBankButtonElement
 from _APC.DetailViewCntrlComponent import DetailViewCntrlComponent
 # from _APC.SessionComponent import SessionComponent
-from _APC.ControlElementUtils import make_button, make_encoder, make_slider, make_ring_encoder, make_pedal_button
+from _APC.ControlElementUtils import make_button, make_encoder, make_ring_encoder, make_pedal_button
 from _APC.SkinDefault import make_rgb_skin, make_default_skin, make_stop_button_skin, make_crossfade_button_skin
 from ._default import Colors
 from ._default.BankToggleComponent import BankToggleComponent
@@ -31,7 +31,7 @@ from _Framework.Control import ButtonControl
 
 from ._resources.ActionsComponent import ActionsComponent
 from ._resources.CustomSessionComponent import CustomSessionComponent
-
+from ._resources.CustomControlElementUtils import make_slider
 
 class APCJ40_MKII(APC, OptimizedControlSurface):
 
